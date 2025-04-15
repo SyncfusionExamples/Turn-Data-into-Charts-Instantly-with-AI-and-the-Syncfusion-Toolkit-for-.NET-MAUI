@@ -5,7 +5,11 @@
              xmlns:local="clr-namespace:ChartGenerater"
              xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
              Source="{Binding Series}"
-             Title="CircularCategory">
+             >
+
+    <chart:SfCartesianChart.Title>
+        <Label Text="{Binding Title}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+    </chart:SfCartesianChart.Title>
     
     <chart:SfCircularChart.Resources>
     <ResourceDictionary>

@@ -7,6 +7,9 @@
              Source="{Binding Series}"
             >
 
+    <chart:SfCartesianChart.Title>
+        <Label Text="{Binding Title}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+    </chart:SfCartesianChart.Title>
     <chart:SfCartesianChart.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

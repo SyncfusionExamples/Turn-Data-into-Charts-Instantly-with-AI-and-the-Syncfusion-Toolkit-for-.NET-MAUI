@@ -14,7 +14,7 @@
         <ResourceDictionary>
             <local:EditorExpandIconVisibilityConverter x:Key="EditorExpandIconVisibilityConverter"/>
             <local:NewChatIconColorConverter x:Key="NewChatIconColorConverter"/>
-
+            <local:HtmlConverterExt x:Key="htmlConverterExt"/>
             <Border Grid.Row="1"
                     x:Name="border" x:Key="EditorView"
                     Background="{StaticResource ContentBackground}"
@@ -504,7 +504,7 @@
                                        EditorViewTemplate="{StaticResource EditorViewTemplate}"
                                        ItemLongPressedCommand="{Binding LongPressedCommand}"
                                        Grid.Row="2"                                   
-                                       Background="White">
+                                       Background="#FDFBF7">
                 <syncfusion:SfAIAssistView.Behaviors>
                 <local:AssistViewBehavior EditorView="{StaticResource EditorView}" 
                                           HeaderView="{x:Reference headerView}"/>
@@ -518,7 +518,6 @@
                                 <Border x:Name="reponseMessageBorder"
                                         HorizontalOptions="Start"
                                         Stroke="Transparent"
-                                        BackgroundColor="Transparent" 
                                         StrokeThickness="0"
                                         Padding="8"
                                         Margin="16,20,0,0">
@@ -542,7 +541,7 @@
                                         HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
                                         WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}" >
                                         <local:ContentSizedWebView.Source>
-                                            <HtmlWebViewSource Html="{Binding Text}"/>
+                                            <HtmlWebViewSource Html="{Binding Text, Converter={StaticResource htmlConverterExt}}"/>
                                         </local:ContentSizedWebView.Source>
                                     </local:ContentSizedWebView>
                                 </Border>
@@ -555,7 +554,7 @@
                                 <Border 
                                         HorizontalOptions="Start"
                                         Stroke="Transparent"
-                                        BackgroundColor="Transparent"  
+                                        BackgroundColor="White"  
                                         StrokeThickness="0"
                                         Padding="8"
                                         Margin="16,20,0,0">
@@ -563,7 +562,7 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="4"/>
                                     </Border.StrokeShape>
-                                    <chartGenerator:CartesianCategory HorizontalOptions="Start" MaximumWidthRequest="800" BindingContext="{Binding ChartConfig}"/>
+                                    <chartGenerator:CartesianCategory HorizontalOptions="Start"  BindingContext="{Binding ChartConfig}"/>
                                 </Border>
                             </Grid>
                         </DataTemplate>
@@ -575,7 +574,7 @@
                                 <Border x:Name="reponseMessageBorder"
                                        HorizontalOptions="Start"
                                        Stroke="Transparent"
-                                       BackgroundColor="Transparent"  
+                                       BackgroundColor="White"  
                                        StrokeThickness="0"
                                        Padding="8"
                                        Margin="16,20,0,0">
@@ -583,7 +582,7 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="4"/>
                                     </Border.StrokeShape>
-                                    <chartGenerator:CircularCategory BackgroundColor="Transparent" HorizontalOptions="Start" MaximumWidthRequest="800" BindingContext="{Binding ChartConfig}"/>
+                                    <chartGenerator:CircularCategory BackgroundColor="Transparent" HorizontalOptions="Start" BindingContext="{Binding ChartConfig}"/>
                                 </Border>
                             </Grid>
                         </DataTemplate>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -33,7 +32,7 @@ namespace AssistViewMAUI
             htmlBuilder.AppendLine("<body>");
 
             var paragraphs = aiResponse.Split(new[] { "<br>", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i=0; i< paragraphs.Count();i++)
+            for (int i = 0; i < paragraphs.Count(); i++)
             {
                 var paragraph = paragraphs[i];
                 if (IsHeading(paragraph))
@@ -72,9 +71,9 @@ namespace AssistViewMAUI
                     ConvertMarkdownToHtml(paragraph, htmlBuilder);
                 }
                 else if (ContainsBoldPattern(paragraph))
-                {                 
+                {
                     htmlBuilder.AppendLine($"<p>{ConvertToHtmlBold(paragraph)}</p>");
-                }            
+                }
                 else if (paragraph.Contains("```"))
                 {
                     htmlBuilder.AppendLine("<table style='border: 1px solid black; border-collapse: collapse; width:100%; '>");
@@ -87,7 +86,7 @@ namespace AssistViewMAUI
                         var codeSnippet = paragraphs[codeSnippetIndex];
                         if (codeSnippet.Contains("```"))
                             break;
-                        htmlBuilder.AppendLine(codeSnippet);                        
+                        htmlBuilder.AppendLine(codeSnippet);
                     }
                     htmlBuilder.AppendLine("</code></pre>");
                     htmlBuilder.AppendLine("</td></tr></table>");
@@ -125,8 +124,8 @@ namespace AssistViewMAUI
             }
 
             // If no hashes are found, return the original title
-            return title;          
-        }     
+            return title;
+        }
         private bool IsHeading(string text)
         {
             // Detect headings, e.g., all caps or specific prefixes
@@ -173,7 +172,7 @@ namespace AssistViewMAUI
             Match match = Regex.Match(markdown, pattern, RegexOptions.IgnoreCase);
             if (match.Success)
             {
-                return IsURL(match.Groups[2].Value); 
+                return IsURL(match.Groups[2].Value);
             }
             return false;
         }
@@ -199,8 +198,8 @@ namespace AssistViewMAUI
         private string ConvertToHtmlBold(string input)
         {
             string pattern = @"\*\*(.*?)\*\*";
-            string result = Regex.Replace(input, pattern, "<strong>$1</strong>");         
-            if(HasBackticks(result))
+            string result = Regex.Replace(input, pattern, "<strong>$1</strong>");
+            if (HasBackticks(result))
             {
                 var backtickPattern = @"`([^`]*)`";
                 var formattedText = Regex.Replace(result, backtickPattern, "<span>$1</span>");
@@ -213,7 +212,7 @@ namespace AssistViewMAUI
         {
             string pattern = @"\*\*.+?\*\*";
             return Regex.IsMatch(input, pattern);
-        }         
+        }
 
         private void ConvertToHtmlList(string paragraph, StringBuilder htmlBuilder)
         {
@@ -224,6 +223,31 @@ namespace AssistViewMAUI
                 htmlBuilder.AppendLine($"<li>{item.Trim().TrimStart('-').Trim()}</li>");
             }
             htmlBuilder.AppendLine("</ol>");
+        }
+    }
+
+    public class HtmlConverterExt : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string html)
+            {
+                return $@"
+            <html>
+                <head>
+                    <style>body {{ margin:0; padding: 0; }}</style>
+                </head>
+                <body onload='window.scrollTo(0, document.body.scrollHeight)'>
+                    {html}
+                </body>
+            </html>";
+            }
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

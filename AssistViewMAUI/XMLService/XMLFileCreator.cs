@@ -1,13 +1,12 @@
 ﻿using Syncfusion.Maui.AIAssistView;
 using Syncfusion.Maui.DataSource.Extensions;
 using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
 using System.Xml.Linq;
 
 namespace AssistViewMAUI
 {
     public class XmlFileCreator
-    {        
+    {
         private string xmlFilePath;
 
         public XmlFileCreator()
@@ -59,7 +58,7 @@ namespace AssistViewMAUI
             if (requestItemElement != null)
             {
                 requestItem = ParseAssistItem(requestItemElement.Element("AssistItem"));
-            }            
+            }
             if (string.IsNullOrEmpty(source))
             {
                 return new AssistItem() { Text = text, IsRequested = isRequested, RequestItem = requestItem, DateTime = dateTime, IsLiked = isLiked, ShowAssistItemFooter = showAssistItemFooter };
@@ -132,7 +131,8 @@ namespace AssistViewMAUI
         public void AddChatHistory(ChatHistoryModel chatHistory)
         {
             var chatHistories = LoadFromXml();
-            chatHistories.Add(chatHistory);
+            //chatHistories.Add(chatHistory);
+            chatHistories.Insert(0, chatHistory);
             SaveToXml(chatHistories);
         }
 
@@ -146,7 +146,7 @@ namespace AssistViewMAUI
                 chatHistory.ConversationCreatedDate = updatedChatHistory.Messages[updatedChatHistory.Messages.Count - 1].Text.Length == 1 ? updatedChatHistory.ConversationCreatedDate : System.DateTime.Now;
                 chatHistory.Messages = updatedChatHistory.Messages;
                 chatHistory.Title = updatedChatHistory.Title;
-                chatHistory.Message = updatedChatHistory.Message;                
+                chatHistory.Message = updatedChatHistory.Message;
                 SaveToXml(chatHistories);
             }
         }
@@ -221,7 +221,7 @@ namespace AssistViewMAUI
             {
                 throw new NotSupportedException("Unsupported ImageSource type");
             }
-        }      
+        }
         #endregion
     }
 }

@@ -12,21 +12,15 @@ namespace AssistViewMAUI
         /// The EndPoint
         /// </summary>
         //internal const string endpoint = "YOUR_END_POINT_NAME";
-        internal const string endpoint = "https://mobilemaui.openai.azure.com/";
+        internal const string endpoint = AzureCredentials.endpoint;
 
         /// <summary>
         /// The Deployment name
-        /// </summar
-        internal const string deploymentName = "gpt-4o";
+        /// </summary>
+        internal const string deploymentName = AzureCredentials.deploymentName;
         //internal const string deploymentName = "DEPLOYMENT_NAME";
 
-        /// <summary>
-        /// The Image Deployment name
-        /// </summary>
-        // internal const string imageDeploymentName = "IMAGE_DEPOLYMENT_NAME";
-        internal const string imageDeploymentName = "DALL-E";
-
-        internal const string key = "6673b6975f334c79bd0db8a1cd70aa49";
+        internal const string key = AzureCredentials.key;
         /// <summary>
         /// The kernal
         /// </summary>

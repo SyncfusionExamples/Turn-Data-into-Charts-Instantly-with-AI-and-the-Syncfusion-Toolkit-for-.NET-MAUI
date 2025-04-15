@@ -1180,6 +1180,7 @@ namespace AssistViewMAUI
                         });
                     }
                 });
+
                 var response = await aiResponseTask;
                 isAnimating = false;
                 if (!this.isTemporaryChatEnabled)
@@ -1218,7 +1219,7 @@ namespace AssistViewMAUI
                     }
 
                     if (assistItem != null)
-                        this.messages.Add(assistItem);
+                        this.messages.Insert(messages.Count - 1, assistItem);
                 }
 
                 string[] words = withoutHeaderContent.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -1228,19 +1229,28 @@ namespace AssistViewMAUI
                     var propertyInfo = assistView.GetType().GetField("AssistViewChat", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     chat = propertyInfo?.GetValue(assistView) as AssistViewChat;
                 }
-                string displayText = headerContent;
-                foreach (string word in words)
-                {
-                    if (this.CanStopResponse) break;
 
-                    await Task.Delay(100); // Simulate typing delay
-                    displayText += word + " ";
-                    responseItem.Text = displayText + "⚫"; // Dot stays at the end
-                    chat?.ScrollToMessage(responseItem);
+                if (withoutHeaderContent.Contains("body"))
+                {
+                    string displayText = headerContent;
+                    foreach (string word in words)
+                    {
+                        if (this.CanStopResponse) break;
+
+                        await Task.Delay(100); // Simulate typing delay
+                        displayText += word + " ";
+                        responseItem.Text = displayText + "⚫"; // Dot stays at the end
+                        chat?.ScrollToMessage(responseItem);
+                    }
+
+                    // Remove the dot at the end of the response
+                    responseItem.Text = displayText.Trim();
+                }
+                else
+                {
+                    messages.Remove(responseItem);
                 }
 
-                // Remove the dot at the end of the response
-                responseItem.Text = displayText.Trim();
                 this.AddToChatHistoryCollection();
                 this.isResponseStreaming = false;
                 //this.SendIconText = "\ue7E8" + " Voice"; // TODO:Need to add voice input support
@@ -1251,22 +1261,28 @@ namespace AssistViewMAUI
         }
         public static string RemoveHeadContent(string htmlString, string headContent, string jsonString)
         {
-            if (string.IsNullOrWhiteSpace(htmlString) || string.IsNullOrWhiteSpace(headContent))
-                return htmlString;
-
-            htmlString = htmlString.Replace(headContent, string.Empty);
+            if (!string.IsNullOrWhiteSpace(htmlString) && !string.IsNullOrWhiteSpace(headContent))
+            {
+                htmlString = htmlString.Replace(headContent, string.Empty);
+            }
             // Remove the head content completely
-            if (string.IsNullOrWhiteSpace(jsonString))
-                return htmlString;
-            var json = "<head[^>]*>" + jsonString + "</head>";
-            return htmlString.Replace(json, string.Empty);
+            var jsonPattern = @"<code>(.*?)</code>";
+            var regex = new Regex(jsonPattern, RegexOptions.Singleline);
+
+            var match = regex.Match(htmlString);
+
+            if (match.Success)
+            {
+                jsonString = match.Groups[1].Value.Trim();
+            }
+            return htmlString.Replace(jsonString, string.Empty);
         }
 
         private string ExtractJsonContent(string htmlString)
         {
             // Regex pattern to extract content within <code> tags
             var jsonPattern = @"<code>(.*?)</code>";
-            var regex = new Regex(jsonPattern, RegexOptions.Singleline);
+            var regex = new Regex(jsonPattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
             var match = regex.Match(htmlString);
 
