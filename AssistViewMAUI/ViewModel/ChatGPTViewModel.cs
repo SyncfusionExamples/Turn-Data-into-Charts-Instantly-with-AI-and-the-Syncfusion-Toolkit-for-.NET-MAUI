@@ -1,4 +1,6 @@
 ﻿using AssistViewMAUI.Helper;
+using ChartGenerater;
+using Newtonsoft.Json;
 using Syncfusion.Maui.AIAssistView;
 using Syncfusion.Maui.Core;
 using Syncfusion.Maui.DataForm;
@@ -565,8 +567,8 @@ namespace AssistViewMAUI
         private void PopulateHeaderPrompts()
         {
             HeaderPrompts = new ObservableCollection<Option>();
-            HeaderPrompts.Add(new Option() { Name = "Ownership", Icon = "\uE751" });
-            HeaderPrompts.Add(new Option() { Name = "Brainstorming", Icon = "\ue774" });
+            HeaderPrompts.Add(new Option() { Name = "Investment portfolio allocation", Icon = "\uE751" });
+            HeaderPrompts.Add(new Option() { Name = "Year-over-year profit margin area chart", Icon = "\ue774" });
             HeaderPrompts.Add(new Option() { Name = "More", Icon = "\ue733" });
         }
 
@@ -767,19 +769,11 @@ namespace AssistViewMAUI
         {
             var chipText = obj as string;
 
-            if (chipText == "Ownership")
-            {
-                this.InputText = "Characteristics of Ownership";
-            }
-            else if (chipText == "Listening")
-            {
-                this.InputText = "Types of Listening";
-            }
-            else if (chipText == "More")
+            if (chipText == "More")
             {
                 HeaderPrompts.RemoveAt(HeaderPrompts.Count - 1);
-                HeaderPrompts.Add(new Option() { Name = "Listening", Icon = "\uE7E2" });
-                HeaderPrompts.Add(new Option() { Name = "Resilience", Icon = "\uE761" });
+                HeaderPrompts.Add(new Option() { Name = "Expenses breakdown on Q1", Icon = "\uE7E2" });
+                HeaderPrompts.Add(new Option() { Name = "Productivity comparison", Icon = "\uE761" });
             }
             else
             {
@@ -1078,7 +1072,7 @@ namespace AssistViewMAUI
         private async void ShowImagePicker()
         {
 #if ANDROID || WINDOWS || (IOS && !MACCATALYST)
-            string filePath = Path.Combine(FileSystem.AppDataDirectory, "image" + ++imageNo + ".jpg");       
+            string filePath = Path.Combine(FileSystem.AppDataDirectory, "image" + ++imageNo + ".jpg");
 
             // Get and store the image from gallery
             await _imagePickerHelper.SaveImageAsync(filePath);
@@ -1150,7 +1144,7 @@ namespace AssistViewMAUI
             this.SendIconText = "\ue7EB";
             this.SendIconWidth = 40;
             AssistItem responseItem = new AssistItem() { Text = "⚫", ShowAssistItemFooter = false, IsRequested = false };
-            this.Messages.Add(responseItem);
+            this.messages.Add(responseItem);
             this.AddToChatHistoryCollection();
             AssistItem request = (AssistItem)inputQuery;
             if (request != null)
@@ -1161,6 +1155,8 @@ namespace AssistViewMAUI
                 {
                     if (!isTemporaryChatEnabled)
                     {
+                        if (string.IsNullOrEmpty(currentChatHistory.Message))
+                            CurrentChatHistory.Message += userAIPrompt;
                         CurrentChatHistory.Message += request.Text;
                         var response = await azureAIService!.GetResultsFromAI(CurrentChatHistory.Message, request.Text, userAIPrompt).ConfigureAwait(false);
                         return response;
@@ -1196,7 +1192,35 @@ namespace AssistViewMAUI
                 responseItem.RequestItem = inputQuery;
                 this.IsNewChatEnabled = true;
                 var headerContent = ExtractHeadContent(response);
-                var withoutHeaderContent = RemoveHeadContent(response, headerContent);
+
+                //Json to chart
+                var jsonString = ExtractJsonContent(response);
+                var withoutHeaderContent = RemoveHeadContent(response, headerContent, jsonString);
+
+                var chartConfig = DeserializeJson(jsonString);
+                if (chartConfig != null)
+                {
+                    IAssistItem assistItem = null;
+                    switch (chartConfig.ChartType)
+                    {
+                        case ChartTypeEnum.Cartesian:
+                            assistItem = new CartesianAssistItem()
+                            {
+                                ChartConfig = chartConfig,
+                            };
+                            break;
+                        case ChartTypeEnum.Circular:
+                            assistItem = new CircularAssistItem()
+                            {
+                                ChartConfig = chartConfig,
+                            };
+                            break;
+                    }
+
+                    if (assistItem != null)
+                        this.messages.Add(assistItem);
+                }
+
                 string[] words = withoutHeaderContent.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 AssistViewChat chat = null;
                 if (assistView != null)
@@ -1225,15 +1249,34 @@ namespace AssistViewMAUI
                 this.SendIconWidth = 40;
             }
         }
-        public static string RemoveHeadContent(string htmlString, string headContent)
+        public static string RemoveHeadContent(string htmlString, string headContent, string jsonString)
         {
             if (string.IsNullOrWhiteSpace(htmlString) || string.IsNullOrWhiteSpace(headContent))
                 return htmlString;
 
+            htmlString = htmlString.Replace(headContent, string.Empty);
             // Remove the head content completely
-            return htmlString.Replace(headContent, string.Empty);
+            if (string.IsNullOrWhiteSpace(jsonString))
+                return htmlString;
+            var json = "<head[^>]*>" + jsonString + "</head>";
+            return htmlString.Replace(json, string.Empty);
         }
 
+        private string ExtractJsonContent(string htmlString)
+        {
+            // Regex pattern to extract content within <code> tags
+            var jsonPattern = @"<code>(.*?)</code>";
+            var regex = new Regex(jsonPattern, RegexOptions.Singleline);
+
+            var match = regex.Match(htmlString);
+
+            if (match.Success)
+            {
+                return match.Groups[1].Value.Trim();
+            }
+
+            return string.Empty; // Return empty if no JSON is found
+        }
 
         private string ExtractHeadContent(string htmlString)
         {
@@ -1249,6 +1292,21 @@ namespace AssistViewMAUI
             }
 
             return string.Empty;
+        }
+
+        private ChartConfig DeserializeJson(string jsonString)
+        {
+            try
+            {
+                var chartConfig = JsonConvert.DeserializeObject<ChartConfig>(jsonString);
+                return chartConfig;
+            }
+            catch (JsonException ex)
+            {
+                // Handle JSON deserialization error
+                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+                return null;
+            }
         }
 
         private string GetUserAIPrompt(string userPrompt)
@@ -1289,10 +1347,10 @@ Expected JSON output:
 
 When generating the JSON output, take into account the following:
 
-1. **Chart Type**: Determine the type of chart (e.g., cartesian, circular) based on keywords in the user query.
+1. **Chart Type**: Determine the type of chart based on keywords in the user query. and it should be circular or cartesian
 2. **Chart Title**: Craft an appropriate title using key elements of the query.
 3. **Axis Information**: Define the x-axis and y-axis with relevant titles and types. Use categories for discrete data and numerical for continuous data.
-4. **Series Configuration**: Include details about the series type and data points as mentioned in the query.
+4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar
 5. **Show Legend**: Default as `true` unless specified otherwise.
 
 Generate appropriate configurations according to these guidelines, and return the result as a JSON formatted string for any query shared with you." +

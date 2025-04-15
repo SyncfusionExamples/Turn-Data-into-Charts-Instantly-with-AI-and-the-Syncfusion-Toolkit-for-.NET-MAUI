@@ -5,53 +5,73 @@
              xmlns:local="clr-namespace:ChartGenerater"
              x:Class="ChartGenerater.ChartResources">
 
- <x:Array x:Key="PaletteBrushesCollection" Type="{x:Type Brush}">
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#30356D" Offset="0.0" />
-         <GradientStop Color="#C0C5FF" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#4AFBFF" Offset="0.0" />
-         <GradientStop Color="#CFFEFF" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#0FC6F4" Offset="0.0" />
-         <GradientStop Color="#A9EEFF" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#2C8BB9" Offset="0.0" />
-         <GradientStop Color="#8AC5E1" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#2E5F99" Offset="0.0" />
-         <GradientStop Color="#67A6F0" Offset="1.0" />
-     </LinearGradientBrush>
- </x:Array>
+    <x:Array x:Key="Pallet1" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#1089E9" />
+        <SolidColorBrush Color="#08CDAA" />
+        <SolidColorBrush Color="#F58400" />
+        <SolidColorBrush Color="#9656FF" />
+        <SolidColorBrush Color="#F9C200" />
+        <SolidColorBrush Color="#F954A3" />
+        <SolidColorBrush Color="#05BB3D" />
+        <SolidColorBrush Color="#06B1E2" />
+        <SolidColorBrush Color="#FF4E4E" />
+    </x:Array>
 
- <x:Array x:Key="RadialbarCollection" Type="{x:Type Brush}">
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#9215F3" Offset="0.0" />
-         <GradientStop Color="#C789F8" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#E2227E" Offset="0.0" />
-         <GradientStop Color="#FB67AE" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#FF4E4E" Offset="0.0" />
-         <GradientStop Color="#FF7272" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#2196F3" Offset="0.0" />
-         <GradientStop Color="#77C2FD" Offset="1.0" />
-     </LinearGradientBrush>
-     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-         <GradientStop Color="#F4890B" Offset="0.0" />
-         <GradientStop Color="#FEC179" Offset="1.0" />
-     </LinearGradientBrush>
- </x:Array>
 
- <DataTemplate x:Key="lineSeriesTemplate">
+    <x:Array x:Key="Pallet2" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#4A9D63" />
+        <SolidColorBrush Color="#FFCB3E" />
+        <SolidColorBrush Color="#69CAF5" />
+        <SolidColorBrush Color="#F2872B" />
+        <SolidColorBrush Color="#2D61E3" />
+        <SolidColorBrush Color="#8EC911" />
+        <SolidColorBrush Color="#A63BE8" />
+        <SolidColorBrush Color="#602EF0" />
+    </x:Array>
+
+
+    <x:Array x:Key="Pallet3" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#01A8B5" />
+        <SolidColorBrush Color="#5F3BC3" />
+        <SolidColorBrush Color="#DE4383" />
+        <SolidColorBrush Color="#F2AE3D" />
+        <SolidColorBrush Color="#EB664B" />
+        <SolidColorBrush Color="#D82591" />
+        <SolidColorBrush Color="#A32FFF" />
+        <SolidColorBrush Color="#4176FF" />
+        <SolidColorBrush Color="#047D43" />
+    </x:Array>
+
+
+    <x:Array x:Key="Pallet4" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#314A6E" />
+        <SolidColorBrush Color="#48988B" />
+        <SolidColorBrush Color="#5E498C" />
+        <SolidColorBrush Color="#74BD6F" />
+        <SolidColorBrush Color="#597FCA" />
+    </x:Array>
+
+
+    <x:Array x:Key="Pallet5" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#95DB9C" />
+        <SolidColorBrush Color="#B95375" />
+        <SolidColorBrush Color="#56BBAF" />
+        <SolidColorBrush Color="#606D7F" />
+        <SolidColorBrush Color="#E99941" />
+        <SolidColorBrush Color="#327DBE" />
+        <SolidColorBrush Color="#E7695A" />
+        <SolidColorBrush Color="#2D4552" />
+    </x:Array>
+
+
+    <x:Array x:Key="Pallet6" Type="{x:Type Brush}">
+        <SolidColorBrush Color="#2EC4B6" />
+        <SolidColorBrush Color="#E75A6E" />
+        <SolidColorBrush Color="#FDCD25" />
+        <SolidColorBrush Color="#0DC920" />
+    </x:Array>
+
+    <DataTemplate x:Key="lineSeriesTemplate">
      <chart:LineSeries ItemsSource="{Binding DataSource}"
                        XBindingPath="xvalue"
                        YBindingPath="yvalue"
@@ -59,7 +79,6 @@
                        Label="{Binding Type}"
                        StrokeWidth="2.5"
                        ShowMarkers="True"
-                       Fill="#1E90FF"
                        EnableAnimation="True">
          <chart:LineSeries.MarkerSettings>
              <chart:ChartMarkerSettings Fill="SkyBlue" 
@@ -77,7 +96,6 @@
                        Label="{Binding Type}"
                        StrokeWidth="2.5"
                        ShowMarkers="True"
-                       Fill="#8A2BE2"
                        EnableAnimation="True">
          <chart:SplineSeries.MarkerSettings>
              <chart:ChartMarkerSettings Fill="#9370DB" 
@@ -106,12 +124,6 @@
                        Label="{Binding Type}"
                        EnableTooltip="{Binding Tooltip}"
                        EnableAnimation="True">
-         <chart:AreaSeries.Fill>
-             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                 <GradientStop Color="#7FCEC5" Offset="0.0" />
-                 <GradientStop Color="LightSeaGreen" Offset="1.0" />
-             </LinearGradientBrush>
-         </chart:AreaSeries.Fill>
      </chart:AreaSeries>
  </DataTemplate>
 

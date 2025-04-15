@@ -552,7 +552,7 @@
                     <chartGenerator:ChatTemplateSelector.CartesianTemplate>
                         <DataTemplate>
                             <Grid ColumnDefinitions="0.9*,0.1*">
-                                <Border x:Name="reponseMessageBorder"
+                                <Border 
                                         HorizontalOptions="Start"
                                         Stroke="Transparent"
                                         BackgroundColor="Transparent"  

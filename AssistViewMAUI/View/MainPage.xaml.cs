@@ -37,11 +37,7 @@ namespace AssistViewMAUI
                 case "MicroPhone":
                     viewmodel.EditorOptionsComamnd.Execute(option);
                     break;
-                case "Ownership":
-                case "Brainstorming":
-                case "Listening":
-                case "Resilience":
-                case "More":
+                default:
                     viewmodel.HeaderPromptCommand.Execute(option.Name);
                     break;
             }

@@ -68,6 +68,7 @@
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="29.1.37" />
 		<PackageReference Include="Syncfusion.Maui.Popup" Version="29.1.37" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Speech" Version="9.0.1" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 	</ItemGroup>
