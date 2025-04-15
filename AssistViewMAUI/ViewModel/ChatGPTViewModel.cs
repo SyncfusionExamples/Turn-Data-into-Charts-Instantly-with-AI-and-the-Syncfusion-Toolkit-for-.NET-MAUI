@@ -1149,23 +1149,24 @@ namespace AssistViewMAUI
             AssistItem request = (AssistItem)inputQuery;
             if (request != null)
             {
-                var userAIPrompt = this.GetUserAIPrompt(request.Text);
+                var userAIPrompt1 = this.GetUserAIPrompt1(request.Text);
+               
                 //var response = await azureAIService!.GetResultsFromAI(request.Text, userAIPrompt).ConfigureAwait(true);
-                var aiResponseTask = Task.Run(async () =>
+                var aiResponseTask1 = Task.Run(async () =>
                 {
                     if (!isTemporaryChatEnabled)
                     {
-                        if (string.IsNullOrEmpty(currentChatHistory.Message))
-                            CurrentChatHistory.Message += userAIPrompt;
-                        CurrentChatHistory.Message += request.Text;
-                        var response = await azureAIService!.GetResultsFromAI(CurrentChatHistory.Message, request.Text, userAIPrompt).ConfigureAwait(false);
+                        string responseText = userAIPrompt1;
+                        responseText += request.Text;
+                        var response = await azureAIService!.GetResultsFromAI(responseText, request.Text, userAIPrompt1).ConfigureAwait(false);
                         return response;
                     }
                     else
                     {
-                        return await azureAIService!.GetResultsFromAI(request.Text, request.Text, userAIPrompt).ConfigureAwait(false);
+                        return await azureAIService!.GetResultsFromAI(request.Text, request.Text, userAIPrompt1).ConfigureAwait(false);
                     }
                 });
+                
                 bool isAnimating = true;
                 _ = Task.Run(async () =>
                 {
@@ -1181,23 +1182,11 @@ namespace AssistViewMAUI
                     }
                 });
 
-                var response = await aiResponseTask;
-                isAnimating = false;
-                if (!this.isTemporaryChatEnabled)
-                {
-                    CurrentChatHistory.Message += response;
-                }
-                response = response.Replace("\n", "<br>");
-                response = htmlConverter.ConvertToHTML(response);
-
-                responseItem.RequestItem = inputQuery;
-                this.IsNewChatEnabled = true;
-                var headerContent = ExtractHeadContent(response);
-
+                var response1 = await aiResponseTask1;
+                response1 = response1.Replace("\n", "<br>");
+                response1 = htmlConverter.ConvertToHTML(response1);
                 //Json to chart
-                var jsonString = ExtractJsonContent(response);
-                var withoutHeaderContent = RemoveHeadContent(response, headerContent, jsonString);
-
+                var jsonString = ExtractJsonContent(response1);
                 var chartConfig = DeserializeJson(jsonString);
                 if (chartConfig != null)
                 {
@@ -1221,7 +1210,36 @@ namespace AssistViewMAUI
                     if (assistItem != null)
                         this.messages.Insert(messages.Count - 1, assistItem);
                 }
+                var userAIPrompt = this.GetUserAIPrompt(request.Text, jsonString);
+                var aiResponseTask = Task.Run(async () =>
+                {
+                    if (!isTemporaryChatEnabled)
+                    {
+                        if (string.IsNullOrEmpty(currentChatHistory.Message))
+                            CurrentChatHistory.Message += userAIPrompt;
+                        CurrentChatHistory.Message += request.Text;
+                        var response = await azureAIService!.GetResultsFromAI(CurrentChatHistory.Message, request.Text, userAIPrompt).ConfigureAwait(false);
+                        return response;
+                    }
+                    else
+                    {
+                        return await azureAIService!.GetResultsFromAI(request.Text, request.Text, userAIPrompt).ConfigureAwait(false);
+                    }
+                });
+                var response = await aiResponseTask;
+                isAnimating = false;
+                if (!this.isTemporaryChatEnabled)
+                {
+                    CurrentChatHistory.Message += response;
+                }
+                response = response.Replace("\n", "<br>");
+                response = htmlConverter.ConvertToHTML(response);
 
+                responseItem.RequestItem = inputQuery;
+                this.IsNewChatEnabled = true;
+                var headerContent = ExtractHeadContent(response);
+                var withoutHeaderContent = RemoveHeadContent(response, headerContent);
+              
                 string[] words = withoutHeaderContent.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 AssistViewChat chat = null;
                 if (assistView != null)
@@ -1229,54 +1247,37 @@ namespace AssistViewMAUI
                     var propertyInfo = assistView.GetType().GetField("AssistViewChat", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     chat = propertyInfo?.GetValue(assistView) as AssistViewChat;
                 }
-
-                if (withoutHeaderContent.Contains("body"))
+                string displayText = headerContent;
+                foreach (string word in words)
                 {
-                    string displayText = headerContent;
-                    foreach (string word in words)
-                    {
-                        if (this.CanStopResponse) break;
+                    if (this.CanStopResponse) break;
 
-                        await Task.Delay(100); // Simulate typing delay
-                        displayText += word + " ";
-                        responseItem.Text = displayText + "⚫"; // Dot stays at the end
-                        chat?.ScrollToMessage(responseItem);
-                    }
-
-                    // Remove the dot at the end of the response
-                    responseItem.Text = displayText.Trim();
-                }
-                else
-                {
-                    messages.Remove(responseItem);
+                    await Task.Delay(100); // Simulate typing delay
+                    displayText += word + " ";
+                    responseItem.Text = displayText + "⚫"; // Dot stays at the end
+                    chat?.ScrollToMessage(responseItem);
                 }
 
+                // Remove the dot at the end of the response
+                responseItem.Text = displayText.Trim();
                 this.AddToChatHistoryCollection();
                 this.isResponseStreaming = false;
                 //this.SendIconText = "\ue7E8" + " Voice"; // TODO:Need to add voice input support
                 SendIconText = "\ue710";
                 this.UpdateSendIcon(this.InputText);
                 this.SendIconWidth = 40;
+
             }
         }
-        public static string RemoveHeadContent(string htmlString, string headContent, string jsonString)
+        public static string RemoveHeadContent(string htmlString, string headContent)
         {
-            if (!string.IsNullOrWhiteSpace(htmlString) && !string.IsNullOrWhiteSpace(headContent))
-            {
-                htmlString = htmlString.Replace(headContent, string.Empty);
-            }
+            if (string.IsNullOrWhiteSpace(htmlString) || string.IsNullOrWhiteSpace(headContent))
+                return htmlString;
+
             // Remove the head content completely
-            var jsonPattern = @"<code>(.*?)</code>";
-            var regex = new Regex(jsonPattern, RegexOptions.Singleline);
-
-            var match = regex.Match(htmlString);
-
-            if (match.Success)
-            {
-                jsonString = match.Groups[1].Value.Trim();
-            }
-            return htmlString.Replace(jsonString, string.Empty);
+            return htmlString.Replace(headContent, string.Empty);
         }
+
 
         private string ExtractJsonContent(string htmlString)
         {
@@ -1324,8 +1325,23 @@ namespace AssistViewMAUI
                 return null;
             }
         }
+        private string GetUserAIPrompt(string userPrompt, string jsonString)
+        {
+            string userQuery = $"Given a user query and chart data: {userPrompt + jsonString}" +
+                   "\nPlease adhere to the following conditions:" +
+                   "\n1. Provide a clear title for the topic in bold." +
+                   "\n2. Offer a simplified answer consisting of 4 key points, formatted with numbers." +
+                   "\n3. Ensure the response is a plain string." +
+                   "\n4. If the text is in markdown format, convert it to HTML." +
+                   "\n5. Provide the response based on chat histroy." +
+                   "\n6. Eliminate any asterisks (**) and any quotation marks present in the string." +
+                   "\n7. Provide nested list as as mentioned {userPrompt}";
 
-        private string GetUserAIPrompt(string userPrompt)
+            return userQuery;
+        }
+
+
+        private string GetUserAIPrompt1(string userPrompt)
         {
             string userQuery = @"
 As an AI service, your task is to convert user inputs describing chart specifications into JSON formatted strings. Each user input will describe a specific chart type and its configurations, including axes titles, legend visibility, series configurations, etc. You will structure the output in JSON format accordingly.
@@ -1336,15 +1352,19 @@ Expected JSON output:
   ""chartType"": ""cartesian"",
   ""title"": ""Revenue by Region"",
   ""showLegend"": true,
-  ""xAxis"": {
+  ""xAxis"":[
+{
     ""type"": ""category"",
     ""title"": ""Region""
-  },
-  ""yAxis"": {
+  }
+],
+  ""yAxis"": [
+{
     ""title"": ""Revenue"",
     ""type"": ""numerical"",
     ""min"": 0
-  },
+  }
+],
   ""series"": [
     {
       ""type"": ""column"",
@@ -1363,7 +1383,7 @@ Expected JSON output:
 
 When generating the JSON output, take into account the following:
 
-1. **Chart Type**: Determine the type of chart based on keywords in the user query. and it should be circular or cartesian
+1. **Chart Type**: Determine the type of chart based on keywords in the user query. and it should be only circular or cartesian
 2. **Chart Title**: Craft an appropriate title using key elements of the query.
 3. **Axis Information**: Define the x-axis and y-axis with relevant titles and types. Use categories for discrete data and numerical for continuous data.
 4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar
@@ -1373,17 +1393,6 @@ Generate appropriate configurations according to these guidelines, and return th
 
   $"User Request: {userPrompt}";
             return userQuery;
-            //string userQuery = $"Given User query: {userPrompt}." +
-            //       "\nPlease adhere to the following conditions:" +
-            //       "\n1. Provide a clear title for the topic in bold." +
-            //       "\n2. Offer a simplified answer consisting of 4 key points, formatted with numbers." +
-            //       "\n3. Ensure the response is a plain string." +
-            //       "\n4. If the text is in markdown format, convert it to HTML." +
-            //       "\n5. Provide the response based on chat histroy." +
-            //       "\n6. Eliminate any asterisks (**) and any quotation marks present in the string." +
-            //       "\n7. Provide nested list as as mentioned in {userPrompt}";
-
-            //return userQuery;
         }
 
         #endregion

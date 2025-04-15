@@ -550,7 +550,7 @@
                     </chartGenerator:ChatTemplateSelector.DefaultTemplate>
                     <chartGenerator:ChatTemplateSelector.CartesianTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="0.9*,0.1*">
+                            <Grid >
                                 <Border 
                                         HorizontalOptions="Start"
                                         Stroke="Transparent"
@@ -562,7 +562,8 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="4"/>
                                     </Border.StrokeShape>
-                                    <chartGenerator:CartesianCategory HorizontalOptions="Start"  BindingContext="{Binding ChartConfig}"/>
+                                    <chartGenerator:CartesianCategory   HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
+ WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}"  BindingContext="{Binding ChartConfig}"/>
                                 </Border>
                             </Grid>
                         </DataTemplate>
@@ -570,7 +571,7 @@
 
                     <chartGenerator:ChatTemplateSelector.CircularTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="0.9*,0.1*">
+                            <Grid >
                                 <Border x:Name="reponseMessageBorder"
                                        HorizontalOptions="Start"
                                        Stroke="Transparent"
@@ -582,7 +583,8 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="4"/>
                                     </Border.StrokeShape>
-                                    <chartGenerator:CircularCategory BackgroundColor="Transparent" HorizontalOptions="Start" BindingContext="{Binding ChartConfig}"/>
+                                    <chartGenerator:CircularCategory BackgroundColor="Transparent"    HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
+ WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}"  BindingContext="{Binding ChartConfig}"/>
                                 </Border>
                             </Grid>
                         </DataTemplate>

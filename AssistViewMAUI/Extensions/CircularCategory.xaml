@@ -8,7 +8,7 @@
              >
 
     <chart:SfCartesianChart.Title>
-        <Label Text="{Binding Title}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+        <Label Text="{Binding Title}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
     </chart:SfCartesianChart.Title>
     
     <chart:SfCircularChart.Resources>

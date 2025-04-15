@@ -58,8 +58,6 @@ public partial class CircularCategory : SfCircularChart
                 return Resources["Pallet2"] as Brush[];
             case 3:
                 return Resources["Pallet3"] as Brush[];
-            case 4:
-                return Resources["Pallet4"] as Brush[];
             case 5:
                 return Resources["Pallet5"] as Brush[];
             default:
