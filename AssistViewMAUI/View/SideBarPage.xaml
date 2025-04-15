@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AssistViewMAUI.SideBarPage"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:local="clr-namespace:AssistViewMAUI"
+             xmlns:data="clr-namespace:Syncfusion.Maui.DataSource.Extensions;assembly=Syncfusion.Maui.DataSource"
+             Title="Flyout"
+             Background="{StaticResource ContentBackground}">
+    
+    <ContentPage.Resources>
+        <local:GroupHeaderTextConverter x:Key="groupHeaderTextConverter" />
+        <local:ClearIconVisibilityConverter x:Key="ClearIconVisibilityConverter"/>
+        <local:SearchIconConverter x:Key="SearchIconConverter"/>
+    </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <local:SfListViewGroupingBehavior/>
+    </ContentPage.Behaviors>
+
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,16,12,0" ColumnSpacing="12">
+                <Border HeightRequest="32" 
+                        WidthRequest="32"
+                        StrokeThickness="0"
+                        Stroke="Transparent"
+                        Background="#FFFBFE">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="30"/>
+                    </Border.StrokeShape>
+                    <Label Text="&#xe7E1;"
+                           TextColor="{StaticResource IconColor}"
+                           FontSize="16"
+                           FontFamily="MauiSampleFontIcon" 
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                </Border>
+
+                <Label Grid.Column="1"
+                       Text="AI Chat"
+                       FontSize="16"
+                       TextColor="#1C1B1F"
+                       CharacterSpacing="0.15"
+                       FontFamily="Roboto-Regular"
+                       VerticalTextAlignment="Center"
+                       HorizontalTextAlignment="Start"/>
+                <core:SfChip Grid.Column="2"
+                             x:Name="chip"
+                             Text="&#xe7e3;" 
+                             TextColor="{StaticResource IconColor}"
+                             HeightRequest="32"  
+                             WidthRequest="32"
+                             CornerRadius="20"
+                             Background="Transparent"
+                             StrokeThickness="0"
+                             FontSize="16"
+                             HorizontalOptions="End"
+                             VerticalTextAlignment="Center"
+                             HorizontalTextAlignment="Center"
+                             FontFamily="MauiSampleFontIcon"
+                             Command="{Binding NewChatTappedCommand}"/>
+            </Grid>
+            
+            
+            <Border Background="#E7E0EC" 
+                    HeightRequest="36"
+                    Margin="12,0"
+                    Stroke="Transparent"
+                    StrokeThickness="0"
+                    Grid.Row="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,2,6,2">
+                    <core:SfChip Text="{Binding Source={x:Reference filterText},Path=IsFocused,Converter={StaticResource SearchIconConverter}}" 
+                                 FontFamily="MauiSampleFontIcon"
+                                 TextColor="{StaticResource IconColor}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 VerticalTextAlignment="Center"
+                                 HorizontalTextAlignment="Center"
+                                 CornerRadius="20"
+                                 Stroke="Transparent"
+                                 StrokeThickness="0"
+                                 HeightRequest="32"
+                                 WidthRequest="32"
+                                 Command="{Binding SearchCommand}"
+                                 CommandParameter="{x:Reference filterText}"/>
+
+                    <Grid Grid.Column="1">
+                        <local:SfEntry x:Name="filterText"
+                                       Placeholder="Search"
+                                       PlaceholderColor="{StaticResource TextColor2}"
+                                       Background="#E7E0EC"
+                                       TextColor="{StaticResource TextColor}"
+                                       FontFamily="Roboto-Regular"
+                                       FontSize="14"
+                                       CharacterSpacing="0.15"
+                                       VerticalTextAlignment="Start"
+                                       VerticalOptions="Start"
+                                       Margin="4,0,4,0"/>
+                    </Grid>
+                    <core:SfChip Grid.Column="2"
+                                 IsVisible="{Binding Source={x:Reference filterText}, Path=Text, Converter={StaticResource ClearIconVisibilityConverter}}"
+                                 Text="&#xe755;"
+                                 FontFamily="MauiSampleFontIcon"
+                                 TextColor="{StaticResource IconColor}"
+                                 VerticalTextAlignment="Center"
+                                 HorizontalTextAlignment="Center"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 CornerRadius="20"
+                                 Stroke="Transparent"
+                                 StrokeThickness="0"
+                                 HeightRequest="32"
+                                 WidthRequest="32"
+                                 Command="{Binding ClearTextCommand}"
+                                 CommandParameter="{x:Reference filterText}"/>
+                </Grid>
+            </Border>
+
+            <listView:SfListView x:Name="listView"
+                                 Grid.Row="2"
+                                 ItemsSource="{Binding ChatHistories}"  
+                                 TapCommand="{Binding ChatHistoryItemTappedCommand}"
+                                 LongPressCommand="{Binding ChatHistoryLongPressCommand}"
+                                 SelectionBackground="Transparent"
+                                 ItemSize="36"
+                                 ItemSpacing="4"
+                                 Margin="12,0">
+                <listView:SfListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border HeightRequest="36" Stroke="Transparent" StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Label Text="{Binding Title}"
+                                   TextColor="#1C1B1F"
+                                   FontFamily="Roboto-Regular"
+                                   FontSize="14"
+                                   CharacterSpacing="0.25"
+                                   VerticalTextAlignment="Center"
+                                   LineBreakMode="TailTruncation"
+                                   Margin="12,0,0,0"/>
+                        </Border>
+                    </DataTemplate>
+                </listView:SfListView.ItemTemplate>
+
+                <listView:SfListView.GroupHeaderTemplate>
+                    <DataTemplate x:Name="GroupHeaderTemplate">
+                        <ViewCell x:DataType="data:GroupResult">
+                            <ViewCell.View>
+                                <Label Text="{Binding Key, Converter={StaticResource groupHeaderTextConverter}}"
+                                       TextColor="{StaticResource TextColor2}"
+                                       CharacterSpacing="0.4"
+                                       VerticalOptions="Center"
+                                       FontFamily="Roboto-Regular"
+                                       FontSize="12"
+                                       Grid.Row="1" />
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </listView:SfListView.GroupHeaderTemplate>
+            </listView:SfListView>
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>
