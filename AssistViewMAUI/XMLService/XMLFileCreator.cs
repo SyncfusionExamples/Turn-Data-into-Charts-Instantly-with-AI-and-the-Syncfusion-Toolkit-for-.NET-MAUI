@@ -1,6 +1,8 @@
-﻿using Syncfusion.Maui.AIAssistView;
+﻿using ChartGenerater;
+using Syncfusion.Maui.AIAssistView;
 using Syncfusion.Maui.DataSource.Extensions;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace AssistViewMAUI
@@ -18,6 +20,43 @@ namespace AssistViewMAUI
 #else
             xmlFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ChatHistory.xml");
 #endif
+        }
+        
+        private ChartConfig ParseChartConfig(XElement chartConfigElement)
+        {
+            if (chartConfigElement == null) return null;
+
+            return new ChartConfig
+            {
+                ChartType = (ChartTypeEnum)Enum.Parse(typeof(ChartTypeEnum), (string)chartConfigElement.Element("ChartType")),
+                Title = (string)chartConfigElement.Element("Title"),
+                ShowLegend = (bool)chartConfigElement.Element("ShowLegend"),
+                XAxis = new ObservableCollection<AxisConfig>(
+                    chartConfigElement.Element("XAxis").Elements("Axis").Select(ax => new AxisConfig
+                    {
+                        Title = (string)ax.Element("Title"),
+                        Type = (string)ax.Element("Type")
+                    })),
+                YAxis = new ObservableCollection<AxisConfig>(
+                    chartConfigElement.Element("YAxis").Elements("Axis").Select(ay => new AxisConfig
+                    {
+                        Title = (string)ay.Element("Title"),
+                        Type = (string)ay.Element("Type")
+                    })),
+                Series = new ObservableCollection<SeriesConfig>(
+                    chartConfigElement.Element("Series").Elements("SeriesConfig").Select(sc => new SeriesConfig
+                    {
+                        Type = (SeriesType)Enum.Parse(typeof(SeriesType), (string)sc.Element("Type")),
+                        XPath = (string)sc.Element("XPath"),
+                        Tooltip = (bool)sc.Element("Tooltip"),
+                        DataSource = new ObservableCollection<DataModel>(
+                            sc.Element("DataSource").Elements("DataModel").Select(dm => new DataModel
+                            {
+                                xvalue = (string)dm.Element("xvalue"),
+                                yvalue = (double)dm.Element("yvalue")
+                            }))
+                    }))
+            };
         }
 
         // Load data from XML file
@@ -45,6 +84,33 @@ namespace AssistViewMAUI
 
         private IAssistItem ParseAssistItem(XElement aiElement)
         {
+            var chartConfig = aiElement.Element("ChartConfig");
+
+            if(chartConfig != null)
+            {
+                var config = ParseChartConfig(chartConfig);
+
+                if(config.ChartType == ChartTypeEnum.Cartesian)
+                {
+                    return new CartesianAssistItem
+                    {
+
+                        ChartConfig = config
+
+                    };
+                }
+                else
+                {
+                    return new CircularAssistItem
+                    {
+
+                        ChartConfig = config
+
+                    };
+                }
+                   
+            }
+
             string text = (string)aiElement.Element("Text");
             bool isRequested = (bool)aiElement.Element("IsRequested");
             XElement requestItemElement = aiElement.Element("RequestItem");
@@ -112,8 +178,80 @@ namespace AssistViewMAUI
         }
 
 
+
+         private XElement ChartAssistItemToXml(IAssistItem item)
+        {
+            ChartConfig chartConfig = new ChartConfig();
+            if ((item is CartesianAssistItem cartesianAssistItem))
+            {
+                chartConfig = cartesianAssistItem.ChartConfig;
+                
+              
+            }
+            else if(item is CircularAssistItem circularAssistItem)
+            {
+                chartConfig = circularAssistItem.ChartConfig;
+            }
+
+            XElement chartConfigElement = new XElement("ChartConfig",
+                new XElement("ChartType", chartConfig.ChartType),
+                new XElement("Title", chartConfig.Title),
+                new XElement("ShowLegend", chartConfig.ShowLegend),
+                new XElement("XAxis",
+                    from xAxis in chartConfig.XAxis
+                    select new XElement("Axis",
+                        new XElement("Title", xAxis.Title),
+                        new XElement("Type", xAxis.Type),
+                        new XElement("Minimum", xAxis.Minimum),
+                        new XElement("Maximum", xAxis.Maximum)
+                    )
+                ),
+                new XElement("YAxis",
+                    from yAxis in chartConfig.YAxis
+                    select new XElement("Axis",
+                        new XElement("Title", yAxis.Title),
+                        new XElement("Type", yAxis.Type),
+                        new XElement("Minimum", yAxis.Minimum),
+                        new XElement("Maximum", yAxis.Maximum)
+                    )
+                ),
+                new XElement("Series",
+                    from series in chartConfig.Series
+                    select new XElement("SeriesConfig",
+                        new XElement("Type", series.Type),
+                        new XElement("XPath", series.XPath),
+                        new XElement("Tooltip", series.Tooltip),
+                        new XElement("DataSource",
+                            from data in series.DataSource
+                            select new XElement("DataModel",
+                                new XElement("xvalue", data.xvalue),
+                                new XElement("yvalue", data.yvalue),
+                                new XElement("date", data.date),
+                                new XElement("xval", data.xval)
+                            )
+                        )
+                    )
+                )
+            );
+
+            return new XElement("AssistItem",
+               
+                chartConfigElement
+               
+            );
+        }
+
+
         private XElement AssistItemToXml(IAssistItem item)
         {
+            var carteisanItem = item as CartesianAssistItem;
+            var circularItem = item as CircularAssistItem;
+
+            if (carteisanItem != null || circularItem != null)
+            {
+                return ChartAssistItemToXml(item);
+            }
+
             var AssistImageItem = item as AssistImageItem;
 
             return new XElement("AssistItem",
