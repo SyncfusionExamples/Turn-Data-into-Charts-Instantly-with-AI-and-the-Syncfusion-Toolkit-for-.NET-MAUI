@@ -1149,24 +1149,23 @@ namespace AssistViewMAUI
             AssistItem request = (AssistItem)inputQuery;
             if (request != null)
             {
-                var userAIPrompt1 = this.GetUserAIPrompt1(request.Text);
-               
-                //var response = await azureAIService!.GetResultsFromAI(request.Text, userAIPrompt).ConfigureAwait(true);
+                var userAIPrompt_chart = this.GetChartUserPrompt(request.Text);
+
                 var aiResponseTask1 = Task.Run(async () =>
                 {
                     if (!isTemporaryChatEnabled)
                     {
-                        string responseText = userAIPrompt1;
+                        string responseText = userAIPrompt_chart;
                         responseText += request.Text;
-                        var response = await azureAIService!.GetResultsFromAI(responseText, request.Text, userAIPrompt1).ConfigureAwait(false);
+                        var response = await azureAIService!.GetResultsFromAI(responseText, request.Text, userAIPrompt_chart).ConfigureAwait(false);
                         return response;
                     }
                     else
                     {
-                        return await azureAIService!.GetResultsFromAI(request.Text, request.Text, userAIPrompt1).ConfigureAwait(false);
+                        return await azureAIService!.GetResultsFromAI(request.Text, request.Text, userAIPrompt_chart).ConfigureAwait(false);
                     }
                 });
-                
+
                 bool isAnimating = true;
                 _ = Task.Run(async () =>
                 {
@@ -1210,6 +1209,7 @@ namespace AssistViewMAUI
                     if (assistItem != null)
                         this.messages.Insert(messages.Count - 1, assistItem);
                 }
+
                 var userAIPrompt = this.GetUserAIPrompt(request.Text, jsonString);
                 var aiResponseTask = Task.Run(async () =>
                 {
@@ -1239,7 +1239,7 @@ namespace AssistViewMAUI
                 this.IsNewChatEnabled = true;
                 var headerContent = ExtractHeadContent(response);
                 var withoutHeaderContent = RemoveHeadContent(response, headerContent);
-              
+
                 string[] words = withoutHeaderContent.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 AssistViewChat chat = null;
                 if (assistView != null)
@@ -1341,7 +1341,7 @@ namespace AssistViewMAUI
         }
 
 
-        private string GetUserAIPrompt1(string userPrompt)
+        private string GetChartUserPrompt(string userPrompt)
         {
             string userQuery = @"
 As an AI service, your task is to convert user inputs describing chart specifications into JSON formatted strings. Each user input will describe a specific chart type and its configurations, including axes titles, legend visibility, series configurations, etc. You will structure the output in JSON format accordingly.
@@ -1386,7 +1386,8 @@ When generating the JSON output, take into account the following:
 1. **Chart Type**: Determine the type of chart based on keywords in the user query. and it should be only circular or cartesian
 2. **Chart Title**: Craft an appropriate title using key elements of the query.
 3. **Axis Information**: Define the x-axis and y-axis with relevant titles and types. Use categories for discrete data and numerical for continuous data.
-4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar
+4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar.
+5. **Data Source**: Provide a sample data source for the series, it should only name as ""dataSource"" and include ""xvalue"" and ""yvalue"".
 5. **Show Legend**: Default as `true` unless specified otherwise.
 
 Generate appropriate configurations according to these guidelines, and return the result as a JSON formatted string for any query shared with you." +

@@ -397,32 +397,6 @@
                              StrokeThickness="0"
                              Command="{Binding SideBarCommand}"/>
 
-            <!--Header Title-->
-            <!-- To-Do : Add GetPlus-->
-                <!--<core:SfChipGroup ItemHeight="40"
-                                  ChipCornerRadius="20" 
-                                  ChipBackground="Transparent" 
-                                  ChipStrokeThickness="0"
-                                  Grid.Column="1"
-                                  ChipClicked="OnChipClicked"
-                                  ItemsSource="{Binding HeaderOptions}"
-                                  HorizontalOptions="Center"
-                                  VerticalOptions="Center">
-
-                    <core:SfChipGroup.ItemTemplate>
-                        <DataTemplate>
-                            <HorizontalStackLayout>
-                                <Label Text="{Binding Name}" Margin="10"
-                                       TextColor="{StaticResource Primary}"
-                                       FontFamily="Roboto-Regular"  
-                                       FontSize="{OnPlatform Default=16,WinUI=14}"
-                                       VerticalTextAlignment="Center"
-                                       HorizontalTextAlignment="Center"/>
-                            </HorizontalStackLayout>
-                        </DataTemplate>
-                    </core:SfChipGroup.ItemTemplate>
-                </core:SfChipGroup>-->
-
                 <!--Header right Options-->
                 <HorizontalStackLayout Grid.Column="2" HorizontalOptions="End">
                     <core:SfChip Text="&#xe7E3;"
@@ -525,16 +499,6 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="4"/>
                                     </Border.StrokeShape>
-
-                                    <!--<Label Text="{Binding Text}" 
-                                            TextType="Html"
-                                            CharacterSpacing="0.15"
-                                            TextColor="#1C1B1F"
-                                            LineHeight="{OnPlatform WinUI=1.6, Default=1.2}"
-                                            LineBreakMode="WordWrap"
-                                            FontFamily="Roboto-Regular"
-                                            HorizontalOptions="Start"
-                                            FontSize="14"/>-->
 
                                     <local:ContentSizedWebView  
                                         Margin="0,0,0,10" 

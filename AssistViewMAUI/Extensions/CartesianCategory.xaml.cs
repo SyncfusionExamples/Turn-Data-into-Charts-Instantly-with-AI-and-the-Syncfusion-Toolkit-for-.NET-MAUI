@@ -66,6 +66,11 @@ namespace ChartGenerater
                 {
                     ChartAxis axis = axisConfig.GetXAxis();
 
+                    if (axis is CategoryAxis category)
+                    {
+                        category.LabelRotation = 45;
+                    }
+
                     axis.AxisLineStyle = SetLineStyle();
                     axis.MajorGridLineStyle = SetLineStyle();
                     axis.MajorTickStyle = SetTickStyle();

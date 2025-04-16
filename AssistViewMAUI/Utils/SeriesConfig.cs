@@ -1,7 +1,5 @@
 using Syncfusion.Maui.Toolkit.Charts;
-using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace ChartGenerater;
 
@@ -106,6 +104,18 @@ public class DataModel
     }
 
     public double? xval
+    {
+        get;
+        set;
+    }
+
+    public string Category
+    {
+        get;
+        set;
+    }
+
+    public double Value
     {
         get;
         set;

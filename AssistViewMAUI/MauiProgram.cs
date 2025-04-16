@@ -11,7 +11,8 @@ namespace AssistViewMAUI
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-              .ConfigureSyncfusionToolkit()
+                .ConfigureSyncfusionToolkit()
+                .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -30,7 +31,6 @@ namespace AssistViewMAUI
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-            builder.ConfigureSyncfusionCore();
             return builder.Build();
         }
     }

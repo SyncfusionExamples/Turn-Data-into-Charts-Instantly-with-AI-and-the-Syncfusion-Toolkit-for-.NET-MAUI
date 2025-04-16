@@ -7,9 +7,9 @@
              Source="{Binding Series}"
              >
 
-    <chart:SfCartesianChart.Title>
+    <chart:SfCircularChart.Title>
         <Label Text="{Binding Title}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-    </chart:SfCartesianChart.Title>
+    </chart:SfCircularChart.Title>
     
     <chart:SfCircularChart.Resources>
     <ResourceDictionary>
