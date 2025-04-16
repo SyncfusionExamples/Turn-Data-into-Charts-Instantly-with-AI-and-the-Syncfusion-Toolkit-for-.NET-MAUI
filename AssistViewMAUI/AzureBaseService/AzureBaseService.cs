@@ -1,5 +1,7 @@
 ﻿using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
+using Microsoft.Maui.Controls;
+using OpenAI.Chat;
 using Syncfusion.Maui.DataSource.Extensions;
 
 namespace AssistViewMAUI
@@ -193,9 +195,9 @@ namespace AssistViewMAUI
             {
                 try
                 {
-                    ChatHistory = ChatHistory + userAIPrompt;
                     var chatresponse = await Client.CompleteAsync(relatedChatHistory);
                     return chatresponse.ToString();
+                    
                 }
                 catch
                 {
@@ -218,6 +220,7 @@ namespace AssistViewMAUI
                 try
                 {
                     ChatHistory = ChatHistory + userAIPrompt;
+                    
                     var chatresponse = await Client.CompleteAsync(userPrompt);
                     return chatresponse.ToString();
                 }
@@ -233,6 +236,42 @@ namespace AssistViewMAUI
                 return response;
             }
 
+        }
+
+       
+
+        internal async Task<string> AnalyzeImageAzureAsync(ImageSource source, string textInput)
+        {
+            byte[] imageBytes = await XmlFileCreator.ConvertImageSourceToByteArray(source);
+
+            // Convert the byte array to a Base64 string
+            return await InterpretImageBase64(Convert.ToBase64String(imageBytes) , textInput);
+        }
+
+        internal async Task<string> InterpretImageBase64(string base64, string textInput)
+        {
+
+            try
+            {
+                var imageDataUri = $"data:image/jpeg;base64,{base64}";
+                var chatHistory = new Microsoft.Extensions.AI.ChatMessage();
+                chatHistory.Text = "You are an AI assistant that describes images.";
+                chatHistory.Contents = (new List<AIContent>
+                {
+            new TextContent("Describe this image:"),
+            new TextContent($"{textInput}"),
+            new ImageContent(imageDataUri)
+                });
+
+                var result = await Client.CompleteAsync(new []{ chatHistory});
+                return result?.ToString() ?? "No description generated.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error generating OpenAI response: {ex.Message}";
+            }
+           
+           
         }
 
         #region Offline Data generation

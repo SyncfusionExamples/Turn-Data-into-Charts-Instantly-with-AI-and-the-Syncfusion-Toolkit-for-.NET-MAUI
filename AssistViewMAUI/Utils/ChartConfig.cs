@@ -28,7 +28,20 @@ public class ChartConfig : INotifyPropertyChanged
             }
         }
     }
+    private bool sideBySidePlacement = true;
 
+    public bool SideBySidePlacement
+    {
+        get => sideBySidePlacement;
+        set
+        {
+            if (sideBySidePlacement != value)
+            {
+                sideBySidePlacement = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     public string Title
     {
         get => title;

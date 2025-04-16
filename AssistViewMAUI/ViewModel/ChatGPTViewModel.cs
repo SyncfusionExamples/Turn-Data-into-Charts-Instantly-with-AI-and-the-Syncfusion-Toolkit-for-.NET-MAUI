@@ -1156,7 +1156,17 @@ namespace AssistViewMAUI
                     if (!isTemporaryChatEnabled)
                     {
                         string responseText = userAIPrompt_chart;
-                        responseText += request.Text;
+                        string imagedescription = string.Empty;
+                        var source = (request as AssistImageItem)?.Source;
+                        if (source != null)
+                        {
+                            imagedescription += await azureAIService!.AnalyzeImageAzureAsync(source, request.Text);
+                            responseText += imagedescription + request.Text;
+                        }
+                        else
+                            responseText += request.Text;
+
+                        CurrentChatHistory.Message += imagedescription + request.Text;
                         var response = await azureAIService!.GetResultsFromAI(responseText, request.Text, userAIPrompt_chart).ConfigureAwait(false);
                         return response;
                     }
@@ -1352,6 +1362,7 @@ Expected JSON output:
   ""chartType"": ""cartesian"",
   ""title"": ""Revenue by Region"",
   ""showLegend"": true,
+""sideBySidePlacement"": ""true/false"",
   ""xAxis"":[
 {
     ""type"": ""category"",
@@ -1388,7 +1399,9 @@ When generating the JSON output, take into account the following:
 3. **Axis Information**: Define the x-axis and y-axis with relevant titles and types. Use categories for discrete data and numerical for continuous data.
 4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar.
 5. **Data Source**: Provide a sample data source for the series, it should only name as ""dataSource"" and include ""xvalue"" and ""yvalue"".
-5. **Show Legend**: Default as `true` unless specified otherwise.
+6. **Show Legend**: Default as `true` unless specified otherwise.
+7.  **SideBySidePlacement**: Default to 'false' and return bool value based on multiple column series placement and column placed side by side being true, column back to back being false, or Bottom/Top being false, or one column being positive and another being negative values.
+     
 
 Generate appropriate configurations according to these guidelines, and return the result as a JSON formatted string for any query shared with you." +
 

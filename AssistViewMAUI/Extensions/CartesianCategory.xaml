@@ -4,7 +4,7 @@
              x:Class="ChartGenerater.CartesianCategory"
              xmlns:local="clr-namespace:ChartGenerater" x:Name="cartesianChart"
              xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
-             Source="{Binding Series}" XAxis="{Binding XAxis}" YAxis="{Binding YAxis}"
+             Source="{Binding Series}" XAxis="{Binding XAxis}" YAxis="{Binding YAxis}" EnableSideBySideSeriesPlacement="{Binding SideBySidePlacement}"
             >
 
     <chart:SfCartesianChart.Title>
@@ -18,9 +18,9 @@
         </ResourceDictionary>
     </chart:SfCartesianChart.Resources>
 
-    <!--<chart:SfCartesianChart.Legend>
+    <chart:SfCartesianChart.Legend>
         <chart:ChartLegend IsVisible="{Binding ShowLegend}" Placement="Bottom" ToggleSeriesVisibility="True"/>
-    </chart:SfCartesianChart.Legend>-->
+    </chart:SfCartesianChart.Legend>
 
 
 </chart:SfCartesianChart>
