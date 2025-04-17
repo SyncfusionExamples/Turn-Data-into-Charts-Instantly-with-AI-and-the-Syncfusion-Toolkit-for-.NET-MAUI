@@ -775,6 +775,10 @@ namespace AssistViewMAUI
                 HeaderPrompts.Add(new Option() { Name = "Expenses breakdown on Q1", Icon = "\uE7E2" });
                 HeaderPrompts.Add(new Option() { Name = "Productivity comparison", Icon = "\uE761" });
             }
+            else if (chipText == "Investment portfolio allocation")
+            {
+                this.InputText = "Investment portfolio allocation\r\n and share better way to diversify the stocks";
+            }
             else
             {
                 this.InputText = chipText;
@@ -1380,6 +1384,7 @@ Expected JSON output:
     {
       ""type"": ""column"",
       ""xpath"": ""region"",
+      ""name"": ""Revenue"",
       ""dataSource"": [
         { ""xvalue"": ""North America"", ""yvalue"": 120000 },
         { ""xvalue"": ""Europe"", ""yvalue"": 90000 },
@@ -1398,9 +1403,10 @@ When generating the JSON output, take into account the following:
 2. **Chart Title**: Craft an appropriate title using key elements of the query.
 3. **Axis Information**: Define the x-axis and y-axis with relevant titles and types. Use categories for discrete data and numerical for continuous data.
 4. **Series Configuration**: Include details about the series type and data points as mentioned in the query. it supports only  Line, Column, Spline, Area, Pie, Doughnut, RadialBar.
-5. **Data Source**: Provide a sample data source for the series, it should only name as ""dataSource"" and include ""xvalue"" and ""yvalue"".
-6. **Show Legend**: Default as `true` unless specified otherwise.
-7.  **SideBySidePlacement**: Default to 'false' and return bool value based on multiple column series placement and column placed side by side being true, column back to back being false, or Bottom/Top being false, or one column being positive and another being negative values.
+5. **Name in the Series**: The name of the series should be represent category of the series.
+6. **Data Source**: Provide a sample data source for the series, it should only name as ""dataSource"" and include ""xvalue"" and ""yvalue"".
+7. **Show Legend**: Default as `true` unless specified otherwise.
+8.  **SideBySidePlacement**: Default to 'false' and return bool value based on multiple column series placement and column placed side by side being true, column back to back being false, or Bottom/Top being false, or one column being positive and another being negative values.
      
 
 Generate appropriate configurations according to these guidelines, and return the result as a JSON formatted string for any query shared with you." +

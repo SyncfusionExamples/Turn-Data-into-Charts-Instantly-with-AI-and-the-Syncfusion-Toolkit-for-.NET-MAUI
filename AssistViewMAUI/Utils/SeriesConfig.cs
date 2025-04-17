@@ -17,6 +17,12 @@ public class SeriesConfig
         set;
     }
 
+    public string Name
+    {
+        get;
+        set;
+    }
+
     public ObservableCollection<DataModel> DataSource
     {
         get;

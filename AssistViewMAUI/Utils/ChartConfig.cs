@@ -1,9 +1,7 @@
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 namespace ChartGenerater;
-
 
 public class ChartConfig : INotifyPropertyChanged
 {
@@ -12,8 +10,6 @@ public class ChartConfig : INotifyPropertyChanged
     private ObservableCollection<SeriesConfig> series;
     private ObservableCollection<AxisConfig> xAxis;
     private ObservableCollection<AxisConfig> yAxis;
-    //private AxisConfig xAxis;
-    //private AxisConfig yAxis;
     private bool showLegend;
 
     public ChartTypeEnum ChartType
@@ -54,32 +50,6 @@ public class ChartConfig : INotifyPropertyChanged
             }
         }
     }
-
-    //public AxisConfig XAxis {
-    //    get => xAxis;
-    //    set
-    //    {
-    //        if (xAxis != value)
-    //        {
-    //            xAxis = value;
-    //            XAxisCollection.Add(xAxis);
-    //            OnPropertyChanged();
-    //        }
-    //    }
-    //}
-
-    //public AxisConfig YAxis {
-    //    get => yAxis;
-    //    set
-    //    {
-    //        if (yAxis != value)
-    //        {
-    //            yAxis = value;
-    //            YAxisCollection.Add(yAxis);
-    //            OnPropertyChanged();
-    //        }
-    //    }
-    //}
 
     public ObservableCollection<AxisConfig> XAxis
     {

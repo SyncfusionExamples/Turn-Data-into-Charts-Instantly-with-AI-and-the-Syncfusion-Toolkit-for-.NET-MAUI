@@ -10,7 +10,6 @@ namespace ChartGenerater
             InitializeComponent();
         }
 
-
         // BindableProperty for the series source
         public static readonly BindableProperty SourceProperty = BindableProperty.Create(
             nameof(Source),
@@ -80,7 +79,6 @@ namespace ChartGenerater
             }
         }
 
-
         private static void YAxisChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is SfCartesianChart cartesianChart && newValue is ObservableCollection<AxisConfig> yAxisConfigs)
@@ -141,12 +139,9 @@ namespace ChartGenerater
                     CreateSeriesFromTemplate(config);
                     var paletteBrush = GetPaletteBrushes();
 
-                    if (Series.Count == 1)
+                    if (Series.Count == 1 && Series[0] is ColumnSeries series)
                     {
-                        if (Series[0] is ColumnSeries series)
-                        {
-                            series.PaletteBrushes = paletteBrush;
-                        }
+                        series.PaletteBrushes = paletteBrush;
                     }
                     else
                     {

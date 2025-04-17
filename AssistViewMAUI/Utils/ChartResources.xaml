@@ -76,7 +76,7 @@
                        XBindingPath="xvalue"
                        YBindingPath="yvalue"
                        EnableTooltip="{Binding Tooltip}"
-                       Label="{Binding Type}"
+                       Label="{Binding Name}"
                        StrokeWidth="2.5"
                        ShowMarkers="True"
                        EnableAnimation="True">
@@ -93,7 +93,7 @@
                        XBindingPath="xvalue"
                        YBindingPath="yvalue"
                        EnableTooltip="{Binding Tooltip}"
-                       Label="{Binding Type}"
+                       Label="{Binding Name}"
                        StrokeWidth="2.5"
                        ShowMarkers="True"
                        EnableAnimation="True">
@@ -110,7 +110,7 @@
                          XBindingPath="xvalue"
                          YBindingPath="yvalue"
                          CornerRadius="15"
-                         Label="{Binding Type}"
+                         Label="{Binding Name}"
                          EnableTooltip="{Binding Tooltip}"
                          EnableAnimation="True">
      </chart:ColumnSeries>
@@ -121,7 +121,7 @@
                        XBindingPath="xvalue"
                        YBindingPath="yvalue"
                        Opacity=".8"
-                       Label="{Binding Type}"
+                       Label="{Binding Name}"
                        EnableTooltip="{Binding Tooltip}"
                        EnableAnimation="True">
      </chart:AreaSeries>

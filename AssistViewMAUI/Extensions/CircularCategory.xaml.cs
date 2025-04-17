@@ -65,7 +65,6 @@ public partial class CircularCategory : SfCircularChart
         }
     }
 
-
     private void CreateSeriesFromTemplate(SeriesConfig config)
     {
         var templateSelector = (SeriesTemplateSelector)Resources["seriesTemplateSelector"];
