@@ -1,0 +1,562 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:dataForm="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+             xmlns:local="clr-namespace:AssistViewMAUI"
+             x:Class="AssistViewMAUI.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="core:SfChip">
+                <Style.Behaviors>
+                    <local:ChipBehavior/>
+                </Style.Behaviors>
+            </Style>
+
+            <Color x:Key="PopupBackgroundColor">#EEE8F4</Color>
+            <Color x:Key="ContentBackground">#F7F2FB</Color>
+            <Color x:Key="TextColor">#1C1B1F</Color>
+            <Color x:Key="IconColor">#49454F</Color>
+            <Color x:Key="TextColor2">#49454F</Color>
+            <Color x:Key="PrimaryBackground">#6750A4</Color>
+
+            <local:SendRequestStateConverter x:Key="SendRequestStateConverter"/>
+            <local:TemporaryChatVisibilityConverter x:Key="TemporaryChatVisibilityConverter"/>
+            <popup:SfPopup x:Key="ResponseContextMenuPopup" 
+                           ShowOverlayAlways="False" 
+                           AutoSizeMode="Width" 
+                           ShowHeader="False"
+                           HeightRequest="336">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle PopupBackground="{StaticResource PopupBackgroundColor}" CornerRadius="5" HasShadow="True"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <listView:SfListView ItemSize="40" 
+                                             WidthRequest="200"
+                                             ItemsSource="{Binding ResponseContextMenu}"  
+                                             TapCommand="{Binding ResponseContextMenuCommand}"
+                                             VerticalOptions="Center">
+                            <listView:SfListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="12" Margin="16,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="{Binding Icon}" 
+                                               FontSize="18"
+                                               TextColor="{StaticResource IconColor}"
+                                               FontFamily="MauiSampleFontIcon" 
+                                               VerticalTextAlignment="Center"/>
+                                        <Label x:Name="label" 
+                                               Grid.Column="1" 
+                                               VerticalTextAlignment="Center"
+                                               Text="{Binding Name}" 
+                                               FontSize="14"
+                                               FontFamily="Roboto-Regular"
+                                               CharacterSpacing="0.25"
+                                               TextColor="{StaticResource TextColor2}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </listView:SfListView.ItemTemplate>
+                        </listView:SfListView>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="RequestContextMenuPopup"
+                           ShowOverlayAlways="False" 
+                           AutoSizeMode="Width"
+                           HeightRequest="136"
+                           ShowHeader="False">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle PopupBackground="{StaticResource PopupBackgroundColor}" CornerRadius="5" HasShadow="True"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <listView:SfListView ItemSize="40"
+                                             WidthRequest="150" 
+                                             ItemsSource="{Binding RequestContextMenu}"  
+                                             TapCommand="{Binding RequestContextMenuCommand}"
+                                             VerticalOptions="Center">
+                            <listView:SfListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="12" Margin="16,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="{Binding Icon}" 
+                                               FontSize="18"
+                                               TextColor="{StaticResource IconColor}"
+                                               FontFamily="MauiSampleFontIcon" 
+                                               VerticalTextAlignment="Center"/>
+                                        <Label x:Name="label" 
+                                               Grid.Column="1" 
+                                               VerticalTextAlignment="Center"
+                                               Text="{Binding Name}" 
+                                               FontSize="14"
+                                               FontFamily="Roboto-Regular"
+                                               CharacterSpacing="0.25"
+                                               TextColor="{StaticResource TextColor2}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </listView:SfListView.ItemTemplate>
+                        </listView:SfListView>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="OptionsContextMenuPopup"
+                           ShowOverlayAlways="False" 
+                           AutoSizeMode="Height"
+                           ShowHeader="False"
+                           AnimationMode="Zoom">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle PopupBackground="{StaticResource PopupBackgroundColor}"
+                                      CornerRadius="10" 
+                                      HasShadow="True"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <Grid Padding="0,10,0,10">
+                            <listView:SfListView x:Name="optionList"
+                                                 ItemSize="40"
+                                                 ItemsSource="{Binding OptionsContextMenu}"  
+                                                 TapCommand="{Binding OptionsContextMenuTapCommand}"
+                                                 VerticalOptions="Center">
+                                <listView:SfListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="40,*,Auto" RowDefinitions="Auto,*">
+                                            <StackLayout Grid.ColumnSpan="3"
+                                                         HeightRequest="1"
+                                                         IsVisible="{Binding CanShowSeparator}"
+                                                         BackgroundColor="#C8C8C8"/>
+                                            <Label Grid.Row="1" 
+                                                   Text="{Binding Icon}" 
+                                                   FontFamily="MauiSampleFontIcon" 
+                                                   HorizontalTextAlignment="Center" 
+                                                   VerticalTextAlignment="Center"
+                                                   FontSize="20"
+                                                   TextColor="{StaticResource IconColor}"/>
+
+                                            <Label x:Name="name" 
+                                                   Grid.Column="1" 
+                                                   Grid.Row="1"
+                                                   VerticalTextAlignment="Center"
+                                                   Text="{Binding Name}"
+                                                   TextColor="{StaticResource TextColor2}"
+                                                   FontSize="16"
+                                                   FontFamily="Roboto-Regular"
+                                                   CharacterSpacing="0.15"/>
+
+                                            <Label Grid.Row="1" 
+                                                   Grid.Column="2"
+                                                   Text="&#xe726;" 
+                                                   FontFamily="MauiSampleFontIcon" 
+                                                   FontSize="20"
+                                                   TextColor="{StaticResource IconColor}"
+                                                   VerticalTextAlignment="Center"
+                                                   Margin="0,0,5,0"
+                                                   IsVisible="{Binding Source={x:Reference optionList},Path=BindingContext.IsTemporaryChatEnabled, Converter={StaticResource TemporaryChatVisibilityConverter}, ConverterParameter={x:Reference name}}"/>
+
+                                        </Grid>
+                                    </DataTemplate>
+                                </listView:SfListView.ItemTemplate>
+                            </listView:SfListView>
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="BadResponsePopup"
+                           HeightRequest="400" 
+                           WidthRequest="330" 
+                           ShowHeader="True"
+                           HeaderTitle="Provide feedback"
+                           ShowCloseButton="True"
+                           HeaderHeight="72">
+
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle CornerRadius="20" PopupBackground="{StaticResource PopupBackgroundColor}"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <Grid Margin="24,0,24,16" RowDefinitions="*,*,Auto">
+                            <Border Grid.Row="0"
+                                    HeightRequest="104" 
+                                    Padding="0"
+                                    Stroke="{StaticResource IconColor}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Editor Placeholder="What was the issue with the response? How could it be improved?" 
+                                        TextColor="{StaticResource TextColor}"
+                                        FontSize="16"
+                                        FontFamily="Roboto-Regular"
+                                        CharacterSpacing="0.15"
+                                        VerticalTextAlignment="Start"
+                                        HorizontalTextAlignment="Start"/>
+                            </Border>
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" 
+                                  Grid.Row="1" >
+
+                                <CheckBox Color="{StaticResource IconColor}"/>
+                                <Label Grid.Column="1" Text="This is harmful/unsafe"
+                                       FontSize="16"
+                                       FontFamily="Roboto-Regular"
+                                       CharacterSpacing="0.15"
+                                       TextColor="{StaticResource TextColor}"
+                                       VerticalTextAlignment="Center"/>
+
+                                <CheckBox Grid.Row="1" Color="{StaticResource IconColor}"/>
+                                <Label Grid.Column="1" Grid.Row="1" 
+                                       Text="This is not true"
+                                       FontSize="16"
+                                       FontFamily="Roboto-Regular"
+                                       CharacterSpacing="0.15"
+                                       TextColor="{StaticResource TextColor}"
+                                       VerticalTextAlignment="Center"/>
+
+                                <CheckBox Grid.Row="2" Color="{StaticResource IconColor}"/>
+                                <Label Grid.Column="1" 
+                                       Grid.Row="2" 
+                                       Text="This is not helpful"
+                                       FontSize="16"
+                                       FontFamily="Roboto-Regular"
+                                       CharacterSpacing="0.15"
+                                       TextColor="{StaticResource TextColor}"
+                                       VerticalTextAlignment="Center"/>
+                            </Grid>
+                            <Button Text="Submit" 
+                                    Grid.Row="2" 
+                                    HeightRequest="40" 
+                                    WidthRequest="86"     
+                                    TextColor="#6750A4"
+                                    FontFamily="Roboto-Medium"
+                                    FontSize="14"
+                                    CharacterSpacing="0.1"
+                                    BackgroundColor="Transparent"
+                                    CornerRadius="20"
+                                    HorizontalOptions="Start"
+                                    Command="{Binding SubmitFeedbackCommand}"/>
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="ViewDetailsPopup"
+                           IsFullScreen="True"
+                           ShowHeader="True"
+                           HeaderTitle=""
+                           ShowCloseButton="True"
+                           AnimationMode="SlideOnRight">
+
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle CornerRadius="0" PopupBackground="{StaticResource PopupBackgroundColor}"/>
+                </popup:SfPopup.PopupStyle>
+                
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Margin="30">
+                            <Label Text="SyncAI" 
+                                   TextColor="{StaticResource TextColor}"
+                                   VerticalOptions="Center" 
+                                   VerticalTextAlignment="Center" 
+                                   HorizontalOptions="Center" 
+                                   HorizontalTextAlignment="Center"
+                                   FontFamily="Roboto-Medium"
+                                   FontSize="18"
+                                   CharacterSpacing="0.25"/>
+
+                            <Label Text="Model Info"
+                                   TextColor="{StaticResource TextColor}"
+                                   FontSize="12"
+                                   FontFamily="Roboto-Regular"
+                                   CharacterSpacing="0.25"
+                                   Margin="0,20,0,0"/>
+
+                            <Label Text="Auto"
+                                   TextColor="{StaticResource TextColor}"
+                                   FontSize="16"
+                                   FontFamily="Roboto-Regular"
+                                   CharacterSpacing="0.25"
+                                   Margin="0,20,0,0"/>
+                            
+                            <Label Text="Use the right model for my request"
+                                   FontSize="14"
+                                   FontFamily="Roboto-Regular"
+                                   TextColor="{StaticResource TextColor2}"
+                                   CharacterSpacing="0.15"
+                                   Margin="0,2,0,0"/>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="RenamePopup" 
+                           x:Name="renamePopup"
+                           ShowHeader="False" 
+                           WidthRequest="350"
+                           AutoSizeMode="Height">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle CornerRadius="10" PopupBackground="{StaticResource PopupBackgroundColor}" HasShadow="True"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <Grid RowDefinitions="70,60">
+                            <dataForm:SfDataForm x:Name="dataForm"
+                                                 DataObject="{Binding CurrentChatHistory}" 
+                                                 LayoutType="TextInputLayout"
+                                                 ValidationMode="PropertyChanged"
+                                                 CommitMode="Manual"
+                                                 ValidateProperty="dataForm_ValidateProperty"
+                                                 AutoGenerateItems="True">
+
+                                <dataForm:SfDataForm.TextInputLayoutSettings>
+                                    <dataForm:TextInputLayoutSettings ContainerType="Outlined" IsHintAlwaysFloated="True"/>
+                                </dataForm:SfDataForm.TextInputLayoutSettings>
+
+                            </dataForm:SfDataForm>
+                            
+                            <HorizontalStackLayout Spacing="10" 
+                                                   Grid.Row="1" 
+                                                   HorizontalOptions="End"
+                                                   HeightRequest="40"
+                                                   VerticalOptions="Center"
+                                                   Margin="0,0,10,0">
+                                <core:SfChip Text="Cancel" 
+                                             TextColor="{StaticResource TextColor}"
+                                             FontFamily="Roboto-Regular"
+                                             FontSize="14" 
+                                             Command="{Binding DeclineCommand}"
+                                             CommandParameter="{x:Reference dataForm}"
+                                             CornerRadius="20"
+                                             StrokeThickness="0"
+                                             Stroke="Transparent"/>
+                                <core:SfChip Text="Rename"
+                                             FontFamily="Roboto-Regular"
+                                             FontSize="14"
+                                             Command="{Binding AcceptRenameCommand}"
+                                             CommandParameter="{x:Reference dataForm}"
+                                             CornerRadius="20"
+                                             StrokeThickness="0"
+                                             Stroke="Transparent"
+                                             IsEnabled="{Binding IsRenameEnabled}">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="TextColor" Value="{StaticResource TextColor}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Disabled">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="TextColor" Value="{StaticResource TextColor2}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </core:SfChip>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="EditorExpandPopup"
+                           x:Name="editorExpandPopup"
+                           ShowHeader="False">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle CornerRadius="0" PopupBackground="{StaticResource ContentBackground}"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto">
+                            <core:SfChip Grid.Column="1"
+                                         Text="&#xe7EA;"
+                                         FontFamily="MauiSampleFontIcon"
+                                         VerticalOptions="End"
+                                         HorizontalOptions="End"
+                                         VerticalTextAlignment="Center"
+                                         HorizontalTextAlignment="Center"
+                                         CornerRadius="20"
+                                         Stroke="Transparent"
+                                         StrokeThickness="0"
+                                         HeightRequest="40"
+                                         WidthRequest="40"
+                                         Margin="10"
+                                         Command="{Binding EditorExpandCollapseCommand}"
+                                         CommandParameter="{x:Reference editorExpandPopup}"/>
+                            
+                            <local:CustomEditor x:Name="editor"
+                                                Grid.Row="1"
+                                                Background="{StaticResource ContentBackground}"
+                                                Placeholder="Message"
+                                                PlaceholderColor="DarkGray"
+                                                AutoSize="TextChanges"
+                                                TextColor="Black"   
+                                                Margin="10,0,10,10"
+                                                FontSize="14"
+                                                FontFamily="Roboto-Regular"
+                                                Text="{Binding InputText}"
+                                                VerticalOptions="Start"/>
+                            
+                            <core:SfChip x:Name="sendRequest"
+                                         Grid.Row="2"
+                                         Grid.Column="1"
+                                         FontFamily="MauiSampleFontIcon"
+                                         VerticalOptions="End"
+                                         HorizontalOptions="End"
+                                         VerticalTextAlignment="Center"
+                                         HorizontalTextAlignment="Center"
+                                         CornerRadius="20"
+                                         Stroke="Transparent"
+                                         StrokeThickness="0"
+                                         HeightRequest="40"
+                                         WidthRequest="40"
+                                         Text="&#xe710;"
+                                         Margin="10"
+                                         IsEnabled="{Binding Source={x:Reference editor}, Path=Text, Converter={StaticResource SendRequestStateConverter}, ConverterParameter={x:Reference sendRequest}}"
+                                         Command="{Binding SendButtonCommand}"/>
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+                
+            </popup:SfPopup>
+
+            <popup:SfPopup x:Key="TemporaryChatPopup"
+                           x:Name="temporaryChatPopup"
+                           ShowHeader="False">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle PopupBackground="{StaticResource PopupBackgroundColor}" CornerRadius="0"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <Grid Margin="10,50,10,10" RowDefinitions="Auto,*">
+                            <VerticalStackLayout>
+                                <Label Text="Temporary chat"
+                                       TextColor="{StaticResource TextColor}"
+                                       FontSize="22"
+                                       FontFamily="Roboto-Medium"
+                                       CharacterSpacing="0.25"/>
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                      ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="10"
+                                      Margin="0,30,0,0">
+                                    <Label Text="&#xe7E9;"
+                                           FontFamily="MauiSampleFontIcon"
+                                           TextColor="{StaticResource IconColor}"
+                                           FontSize="18"/>
+                                    <Label Grid.Column="1"
+                                           Text="Not in history"
+                                           TextColor="{StaticResource TextColor}"
+                                           FontFamily="Roboto-Medium"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"/>
+                                    <Label Grid.Row="1"
+                                           Grid.Column="1"
+                                           Text="Temporary chats won't appear in your history. For safety purposes, we may keep a copy of your chat for up to 30 days."
+                                           FontFamily="Roboto-Regular"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"
+                                           TextColor="{StaticResource TextColor2}"
+                                           Margin="0,5,0,0"/>
+                                    <StackLayout HeightRequest="1"
+                                                 Grid.Row="2"
+                                                 Grid.ColumnSpan="2"
+                                                 Background="LightGray"
+                                                 Margin="0,15,0,15"/>
+
+                                    <Label Text="&#xe758;"
+                                           FontFamily="MauiSampleFontIcon"
+                                           TextColor="{StaticResource IconColor}"
+                                           FontSize="18"
+                                           Grid.Row="3"/>
+                                    <Label Grid.Column="1"
+                                           Text="No model training"
+                                           TextColor="{StaticResource TextColor}"
+                                           FontFamily="Roboto-Medium"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"
+                                           Grid.Row="3"/>
+                                    <Label Grid.Row="4"
+                                           Grid.Column="1"
+                                           Text="Temporary chats won't be used to improve our models."
+                                           FontFamily="Roboto-Regular"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"
+                                           TextColor="{StaticResource TextColor2}"
+                                           Margin="0,5,0,0"/>
+                                    <StackLayout HeightRequest="1"
+                                                 Grid.Row="5"
+                                                 Grid.ColumnSpan="2"
+                                                 Background="LightGray"
+                                                 Margin="0,15,0,15"/>
+
+                                    <Label Text="&#xe7B1;"
+                                           FontFamily="MauiSampleFontIcon"
+                                           TextColor="{StaticResource IconColor}"
+                                           FontSize="18"
+                                           Grid.Row="6"/>
+                                    <Label Grid.Column="1"
+                                           Text="No memory"
+                                           TextColor="{StaticResource TextColor}"
+                                           FontFamily="Roboto-Medium"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"
+                                           Grid.Row="6"/>
+                                    <Label Grid.Row="7"
+                                           Grid.Column="1"
+                                           Text="While in a Temporary Chat, ChatGPT won't use or create memories. Custom Instructions will still be followed if you have them enabled."
+                                           FontFamily="Roboto-Regular"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"
+                                           Margin="0,5,0,0"
+                                           TextColor="{StaticResource TextColor2}"/>
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <Border Grid.Row="1" 
+                                    Stroke="Transparent" 
+                                    StrokeThickness="0"
+                                    Background="{StaticResource PrimaryBackground}"
+                                    VerticalOptions="End"
+                                    HeightRequest="40"
+                                    HorizontalOptions="Center"
+                                    WidthRequest="300">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20"/>
+                                </Border.StrokeShape>
+                                <Label Text="Continue"
+                                       TextColor="#FFFFFF"
+                                       FontSize="16"
+                                       FontFamily="Roboto-Medium"
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"
+                                       CharacterSpacing="0.15"/>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding TemporaryChatCommand}"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+
+            </popup:SfPopup>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

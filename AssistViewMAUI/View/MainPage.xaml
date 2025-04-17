@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             xmlns:local="clr-namespace:AssistViewMAUI"
+             xmlns:chartGenerator="clr-namespace:ChartGenerater"
+             x:Class="AssistViewMAUI.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:EditorExpandIconVisibilityConverter x:Key="EditorExpandIconVisibilityConverter"/>
+            <local:NewChatIconColorConverter x:Key="NewChatIconColorConverter"/>
+            <local:HtmlConverterExt x:Key="htmlConverterExt"/>
+            <Border Grid.Row="1"
+                    x:Name="border" x:Key="EditorView"
+                    Background="{StaticResource ContentBackground}"
+                    Stroke="#CAC4D0"
+                    StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="{OnPlatform Android='40', Default='Auto'}"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackLayout BindableLayout.ItemsSource="{Binding ImageSourceCollection}"
+                                 Grid.ColumnSpan="2"
+                                 Margin="5,5,5,0"
+                                 IsVisible="{Binding HasImageUploaded}" 
+                                 Orientation="Horizontal">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HeightRequest="60"
+                                      WidthRequest="60"
+                                      ColumnDefinitions="Auto"
+                                      HorizontalOptions="Start">
+                                    <Border Stroke="Transparent"
+                                            StrokeThickness="0"
+                                            WidthRequest="50"
+                                            HeightRequest="50"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10"/>
+                                        </Border.StrokeShape>
+
+                                        <Image Source="{Binding .}"
+                                               WidthRequest="50" 
+                                               HeightRequest="50"
+                                               Aspect="Fill"/>
+                                    </Border>
+                                    <core:SfBadgeView HorizontalOptions="End"
+                                                      WidthRequest="60" 
+                                                      VerticalOptions="Start">
+                                        <core:SfBadgeView.Content>
+                                            <StackLayout HorizontalOptions="End" 
+                                                         HeightRequest="16" 
+                                                         WidthRequest="16">
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference border}, Path=BindingContext.CancelImageSelected}"
+                                                                          CommandParameter="{Binding .}"/>
+                                                </StackLayout.GestureRecognizers>
+                                            </StackLayout>
+                                        </core:SfBadgeView.Content>
+                                        <core:SfBadgeView.BadgeSettings>
+                                            <core:BadgeSettings Position="TopRight" 
+                                                                FontSize="10" 
+                                                                Icon="Delete"/>
+                                        </core:SfBadgeView.BadgeSettings>
+                                    </core:SfBadgeView>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </StackLayout>
+
+                    <core:SfChip Grid.Column="1"
+                                 Text="&#xe7CD;" 
+                                 FontFamily="MauiSampleFontIcon"
+                                 VerticalOptions="Start"
+                                 HorizontalOptions="Center"
+                                 VerticalTextAlignment="Center"
+                                 HorizontalTextAlignment="Center"
+                                 CornerRadius="20"
+                                 Stroke="Transparent"
+                                 StrokeThickness="0"
+                                 HeightRequest="30"
+                                 WidthRequest="30"
+                                 Margin="10"
+                                 Grid.Row="1"
+                                 Command="{Binding EditorExpandCollapseCommand}"
+                                 CommandParameter="{x:Reference editor}"
+                                 IsVisible="{Binding Source={x:Reference editor}, Path=Height, Converter={StaticResource EditorExpandIconVisibilityConverter}}"/>
+
+                            <local:CustomEditor x:Name="editor"
+                                                Background="#F7F2FB"
+                                                Placeholder="Type here..."
+                                                PlaceholderColor="#49454F"
+                                                AutoSize="TextChanges"
+                                                MaximumHeightRequest="100"
+                                                TextColor="Black"
+                                                FontSize="16"
+                                                Grid.Row="1"
+                                                CharacterSpacing="0.15"
+                                                Margin="12,0,0,0"
+                                                FontFamily="Roboto-Regular"
+                                                VerticalTextAlignment="Center"
+                                                Text="{Binding Source={x:Reference assistView}, Path=BindingContext.InputText}">
+                                <local:CustomEditor.Behaviors>
+                                    <local:EditorTextChangedBehavior/>
+                                </local:CustomEditor.Behaviors>
+                            </local:CustomEditor>
+
+                            <core:SfChipGroup ItemHeight="40"
+                                              Margin="5"
+                                              ChipCornerRadius="20" 
+                                              ChipBackground="Transparent" 
+                                              ChipStrokeThickness="0"  
+                                              Grid.Row="2"
+                                              ChipPadding="0"
+                                              ChipClicked="OnChipClicked"
+                                              ItemsSource="{Binding Path=EditorOptions}">
+                                <core:SfChipGroup.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid x:Name="editorOptionGrid" ColumnDefinitions="Auto,Auto">
+                                            <Label x:Name="editorOptions"
+                                                   Text="{Binding Icon}"
+                                                   VerticalTextAlignment="Center" 
+                                                   HorizontalTextAlignment="Center" 
+                                                   HorizontalOptions="Center" 
+                                                   FontFamily="MauiSampleFontIcon" 
+                                                   TextColor="#611C1B1F"
+                                                   FontSize="20"
+                                                   WidthRequest="40">
+                                            </Label>
+
+                                            <popup:SfPopup x:Name="contextMenuPopup"  
+                                                           AutoSizeMode="Both"
+                                                           Grid.Column="1" 
+                                                           ShowOverlayAlways="False" 
+                                                           IsOpen="{Binding IsOpen}" 
+                                                           RelativeView="{x:Reference editorOptionGrid}" 
+                                                           RelativePosition="AlignTop" 
+                                                           AbsoluteY="-10"
+                                                           ShowHeader="False">
+
+                                                <popup:SfPopup.PopupStyle>
+                                                    <popup:PopupStyle CornerRadius="8" 
+                                                                      PopupBackground="#EEE8F4"
+                                                                      HasShadow="True"/>
+                                                </popup:SfPopup.PopupStyle>
+
+                                                <popup:SfPopup.ContentTemplate>
+                                                    <DataTemplate>
+                                                        <listView:SfListView ItemSize="40"
+                                                                             VerticalOptions="Center"
+                                                                             WidthRequest="190"
+                                                                             HeightRequest="80"
+                                                                             SelectionBackground="Transparent"
+                                                                             Margin="0,8,0,8"
+                                                                             ItemsSource="{Binding Source={x:Reference assistView}, Path=BindingContext.AttachmentContextMenu}"
+                                                                             TapCommand="{Binding Source={x:Reference assistView}, Path=BindingContext.AttachmentContextMenuCommand}">
+                                                            <listView:SfListView.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid ColumnSpacing="12" Padding="16,8">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="Auto"/>
+                                                                            <ColumnDefinition Width="Auto"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Label Grid.Column="0" 
+                                                                               Text="{Binding Icon}"
+                                                                               FontSize="18"
+                                                                               FontFamily="MauiSampleFontIcon"
+                                                                               VerticalOptions="Center"
+                                                                               VerticalTextAlignment="Center"
+                                                                               HorizontalTextAlignment="Center"
+                                                                               TextColor="#1C1B1F"/>
+                                                                        <Label x:Name="label"
+                                                                               Grid.Column="1"
+                                                                               VerticalTextAlignment="Center"
+                                                                               Text="{Binding Name}"
+                                                                               FontSize="16"
+                                                                               TextColor="#1C1B1F"
+                                                                               CharacterSpacing="0.15"
+                                                                               FontFamily="Roboto-Regular"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </listView:SfListView.ItemTemplate>
+                                                        </listView:SfListView>
+                                                    </DataTemplate>
+                                                </popup:SfPopup.ContentTemplate>
+                                            </popup:SfPopup>
+                                        </Grid>
+                                    </DataTemplate>
+                                </core:SfChipGroup.ItemTemplate>
+                            </core:SfChipGroup>
+
+                            <core:SfChip x:Name="chip"
+                                         Grid.Column="1"
+                                         Grid.Row="2"
+                                         Text="{Binding SendIconText}"
+                                         HeightRequest="40"
+                                         CornerRadius="20"
+                                         WidthRequest="{Binding SendIconWidth}"
+                                         Background="{StaticResource PrimaryBackground}"
+                                         TextColor="#FFFFFF"
+                                         StrokeThickness="0"
+                                         HorizontalOptions="End"
+                                         VerticalTextAlignment="Center"
+                                         HorizontalTextAlignment="Center"
+                                         FontFamily="MauiSampleFontIcon"   
+                                         Margin="10,0,10,10"
+                                         IsEnabled="{Binding IsSendIconEnabled}"
+                                         Command="{Binding Source={x:Reference assistView},Path=BindingContext.SendButtonCommand}"
+                                         CommandParameter="{x:Reference assistView}"/>
+                        </Grid>
+                    </Border>
+            <Grid x:Key="HeaderView" x:Name="headerView">
+                <Grid RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="12"
+                      VerticalOptions="Center"
+                      HorizontalOptions="Center"
+                      MaximumWidthRequest="{OnPlatform WinUI=650, MacCatalyst=670}">
+
+                    <Border HeightRequest="56" 
+                            WidthRequest="56"
+                            StrokeThickness="0"
+                            Stroke="Transparent"
+                            Background="#F7F2FB">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="30"/>
+                        </Border.StrokeShape>
+                        <Label Text="&#xe7E1;"
+                               TextColor="{StaticResource TextColor2}"
+                               FontSize="26"
+                               FontFamily="MauiSampleFontIcon" 
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"/>
+                    </Border>
+
+                    <Label Grid.Row="1"
+                           Text="{Binding HeaderText}" 
+                           TextColor="#1C1B1F"
+                           HorizontalOptions="Center" 
+                           FontFamily="Roboto-Regular" 
+                           FontSize="28"/>
+
+                    <core:SfChipGroup Grid.Row="2"
+                                      ChipCornerRadius="8" 
+                                      ChipBackground="Transparent" 
+                                      ChipStrokeThickness="1"
+                                      ChipStroke="#79747E"
+                                      ChipClicked="OnChipClicked"
+                                      ItemsSource="{Binding HeaderPrompts}">
+
+                        <core:SfChipGroup.ChipLayout>
+                            <FlexLayout Wrap="Wrap"
+                                        JustifyContent="Center"/>
+                        </core:SfChipGroup.ChipLayout>
+
+                        <core:SfChipGroup.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="5" Margin="10,6,10,6">
+                                    <Label Text="{Binding Icon}" 
+                                           VerticalTextAlignment="Center" 
+                                           HorizontalTextAlignment="Center"
+                                           FontFamily="MauiSampleFontIcon" 
+                                           TextColor="#735EAB"
+                                           FontSize="16"/>
+
+                                    <Label Text="{Binding Name}"  
+                                           VerticalTextAlignment="Center"
+                                           HorizontalTextAlignment="Start" 
+                                           TextColor="{StaticResource TextColor2}"
+                                           FontFamily="Roboto-Regular"
+                                           FontSize="14"
+                                           CharacterSpacing="0.25"/>
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </core:SfChipGroup.ItemTemplate>
+                    </core:SfChipGroup>
+                </Grid>
+            </Grid>
+
+            <DataTemplate x:Key="EditorViewTemplate">
+                <Grid RowDefinitions="Auto,Auto,Auto" Margin="10">
+                    <ContentView Content="{StaticResource HeaderView}" IsVisible="{Binding IsHeaderVisible}"/>
+                    <listView:SfListView ItemSize="40" 
+                                         Grid.Row="1"
+                                         ItemsSource="{Binding AutoSuggestions}"
+                                         IsVisible="{Binding AutoSuggestionPopupIsOpen}"
+                                         TapCommand="{Binding AutoSuggestionItemTappedCommand}">
+                        <listView:SfListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="*,Auto" Margin="10,0,0,0">
+                                    <Label Text="{Binding .}"
+                                           FontSize="14"
+                                           FontFamily="Roboto-Regular"
+                                           TextColor="Black"
+                                           VerticalTextAlignment="Center"/>
+                                    <StackLayout HeightRequest="0.5"
+                                                 Grid.Row="1"
+                                                 Background="LightGray"/>
+                                </Grid>
+            </DataTemplate>
+                        </listView:SfListView.ItemTemplate>
+                    </listView:SfListView>
+
+                    <Border HorizontalOptions="Center" 
+                            Grid.Row="1"
+                            VerticalOptions="Center" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            Background="White"
+                            Stroke="LightGray"
+                            StrokeThickness="1"
+                            Margin="0,0,0,10"
+                            IsVisible="{Binding IsScrollToBottom}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ScrollToBottomCommand}" CommandParameter="{x:Reference assistView}"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="&#xe711;" 
+                               FontFamily="MauiSampleFontIcon"
+                               VerticalTextAlignment="Center"
+                               HorizontalTextAlignment="Center"/>
+                    </Border>
+
+                    <!--Toast code changes-->
+                    <Border Grid.Row="1" Margin="0,0,0,10" HeightRequest="40" VerticalOptions="End" IsVisible="{Binding IsGoodResponse}" Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="4"/>
+                        </Border.StrokeShape>
+                        <Grid HeightRequest="40" BackgroundColor="#323035">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontSize="14" TextColor="#E6E1E5" Text="{Binding GoodResponsePopupText}" VerticalOptions="Center" VerticalTextAlignment="Center" Margin="16,0,0,0" CharacterSpacing="0.25"/>
+                            <Label Grid.Column="1" FontSize="14" TextColor="#E6E1E5" HorizontalOptions="End" FontAttributes="Bold" VerticalOptions="Center" VerticalTextAlignment="Center" Text="&#xe755;" FontFamily="MauiSampleFontIcon" Margin="0,0,16,0" CharacterSpacing="0.25">
+                            </Label>
+                        </Grid>
+                    </Border>
+
+                    <!--Editor expand and collapse - fullscreen option-->
+                    <ContentView Grid.Row="2" Content="{StaticResource EditorView}"/>
+
+                </Grid>
+            </DataTemplate>
+            <ResourceDictionary.MergedDictionaries>
+                <syncTheme:SyncfusionThemeDictionary>
+                    <syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                        <ResourceDictionary>
+                            <x:String x:Key="SfAIAssistViewTheme">CustomTheme</x:String>
+                            <Color x:Key="SfAIAssistViewRequestItemTextColor">#1C1B1F</Color>
+                            <x:String x:Key="SfAIAssistViewRequestItemFontFamily">Roboto-Regular</x:String>                            
+                        </ResourceDictionary>
+                    </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                </syncTheme:SyncfusionThemeDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </ContentPage.Resources>
+
+
+    <ContentPage.Behaviors>
+        <local:SfAssistViewHeaderBehavior/>
+    </ContentPage.Behaviors>
+
+        <Grid x:Name="mainGrid" 
+              RowDefinitions="60,Auto,*" 
+              HorizontalOptions="{OnPlatform WinUI=Center, MacCatalyst=Center, Default=Fill}"
+              MaximumWidthRequest="{OnPlatform WinUI=650, MacCatalyst=670}">
+
+            <Grid ColumnDefinitions="*,*,*" 
+                  HeightRequest="48" 
+                  Padding="4,0,4,0"
+                  BackgroundColor="{StaticResource ContentBackground}">
+                <!--Header Left Option-->
+                <core:SfChip Text="&#xe731;"
+                             FontFamily="MauiSampleFontIcon"
+                             HeightRequest="40"
+                             WidthRequest="40"
+                             HorizontalOptions="Start"
+                             FontSize="24"
+                             CornerRadius="20"
+                             Stroke="Transparent"
+                             TextColor="{StaticResource IconColor}"
+                             StrokeThickness="0"
+                             Command="{Binding SideBarCommand}"/>
+
+                <!--Header right Options-->
+                <HorizontalStackLayout Grid.Column="2" HorizontalOptions="End">
+                    <core:SfChip Text="&#xe7E3;"
+                                 FontFamily="MauiSampleFontIcon"
+                                 HeightRequest="40"
+                                 WidthRequest="40"
+                                 FontSize="20"
+                                 CornerRadius="20"
+                                 Stroke="Transparent"
+                                 StrokeThickness="0"
+                                 IsEnabled="{Binding IsNewChatEnabled}"
+                                 Command="{Binding NewChatTappedCommand}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <VisualState.Setters>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="TextColor" Value="{StaticResource IconColor}"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="TextColor" Value="LightGray"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                    </core:SfChip>
+
+                    <core:SfChip x:Name="option"
+                                 Text="&#xe732;"
+                                 FontFamily="MauiSampleFontIcon"
+                                 HeightRequest="40"
+                                 WidthRequest="40"
+                                 FontSize="20"
+                                 CornerRadius="20"
+                                 Stroke="Transparent"
+                                 StrokeThickness="0"
+                                 TextColor="{StaticResource IconColor}"
+                                 Command="{Binding OptionsContextMenuCommand}"
+                                 CommandParameter="{x:Reference option}">
+
+                    </core:SfChip>
+                </HorizontalStackLayout>
+            </Grid>
+
+            <HorizontalStackLayout HeightRequest="40" 
+                                   Grid.Row="1"
+                                   Spacing="8"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" 
+                                   IsVisible="{Binding IsTemporaryChatEnabled}">
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding TemporaryChatCommand}"/>
+                </HorizontalStackLayout.GestureRecognizers>
+                <Label Text="&#xe7E9;"
+                       FontFamily="MauiSampleFontIcon" 
+                       TextColor="{StaticResource TextColor2}" 
+                       FontSize="16"
+                       VerticalTextAlignment="Center"/>
+                <Label Text="Temporary Chat"
+                       TextColor="{StaticResource TextColor2}"
+                       FontFamily="Roboto-Regular"  
+                       FontSize="14"
+                       CharacterSpacing="0.25"
+                       VerticalTextAlignment="Center"/>
+                <Label Text="&#xe719;"
+                       FontFamily="MauiSampleFontIcon" 
+                       TextColor="{StaticResource TextColor2}"
+                       FontSize="16"
+                       VerticalTextAlignment="Center"/>
+            </HorizontalStackLayout>
+
+            <syncfusion:SfAIAssistView x:Name="assistView"
+                                       ShowHeader="False"
+                                       AssistItems="{Binding Messages}"
+                                       EditorViewTemplate="{StaticResource EditorViewTemplate}"
+                                       ItemLongPressedCommand="{Binding LongPressedCommand}"
+                                       Grid.Row="2"                                   
+                                       Background="#FDFBF7">
+                <syncfusion:SfAIAssistView.Behaviors>
+                <local:AssistViewBehavior EditorView="{StaticResource EditorView}" 
+                                          HeaderView="{x:Reference headerView}"/>
+                </syncfusion:SfAIAssistView.Behaviors>
+
+                <syncfusion:SfAIAssistView.ResponseItemTemplate>
+                <chartGenerator:ChatTemplateSelector>
+                    <chartGenerator:ChatTemplateSelector.DefaultTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="0.9*,0.1*">
+                                <Border x:Name="reponseMessageBorder"
+                                        HorizontalOptions="Start"
+                                        Stroke="Transparent"
+                                        StrokeThickness="0"
+                                        Padding="8"
+                                        Margin="16,20,0,0">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+
+                                    <local:ContentSizedWebView  
+                                        Margin="0,0,0,10" 
+                                        HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
+                                        WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}" >
+                                        <local:ContentSizedWebView.Source>
+                                            <HtmlWebViewSource Html="{Binding Text, Converter={StaticResource htmlConverterExt}}"/>
+                                        </local:ContentSizedWebView.Source>
+                                    </local:ContentSizedWebView>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </chartGenerator:ChatTemplateSelector.DefaultTemplate>
+                    <chartGenerator:ChatTemplateSelector.CartesianTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Border 
+                                        HorizontalOptions="Start"
+                                        Stroke="Transparent"
+                                        BackgroundColor="White"  
+                                        StrokeThickness="0"
+                                        Padding="8"
+                                        Margin="16,20,0,0">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <chartGenerator:CartesianCategory   HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
+ WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}"  BindingContext="{Binding ChartConfig}"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </chartGenerator:ChatTemplateSelector.CartesianTemplate>
+
+                    <chartGenerator:ChatTemplateSelector.CircularTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Border x:Name="reponseMessageBorder"
+                                       HorizontalOptions="Start"
+                                       Stroke="Transparent"
+                                       BackgroundColor="White"  
+                                       StrokeThickness="0"
+                                       Padding="8"
+                                       Margin="16,20,0,0">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <chartGenerator:CircularCategory BackgroundColor="Transparent"    HeightRequest="{Binding BindingContext.WebViewHeightRequest, Source={x:Reference assistView}}" 
+ WidthRequest="{Binding BindingContext.WebViewWidthRequest, Source={x:Reference assistView}}"  BindingContext="{Binding ChartConfig}"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </chartGenerator:ChatTemplateSelector.CircularTemplate>
+
+                </chartGenerator:ChatTemplateSelector>
+            </syncfusion:SfAIAssistView.ResponseItemTemplate>
+            </syncfusion:SfAIAssistView>
+
+        </Grid>
+</ContentPage>
