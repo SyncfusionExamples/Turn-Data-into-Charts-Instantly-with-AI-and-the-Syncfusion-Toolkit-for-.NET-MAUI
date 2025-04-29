@@ -1,6 +1,6 @@
 # 🧠📊 AI-Powered Chart Generator using Syncfusion Toolkit for .NET MAUI
 
-This project demonstrates how to use **natural language** and **AI (via Azure OpenAI)** to dynamically generate **interactive charts** in a .NET MAUI application, powered by the **Syncfusion MAUI Toolkit**.
+This project demonstrates how to use **natural language** and **AI (via Azure OpenAI)** to dynamically generate **interactive charts** in a .NET MAUI application, powered by the **Syncfusion Toolkit** for **.NET MAUI**.
 
 It features a chatbot-like UI that accepts natural language input, generates chart data using Azure OpenAI, and displays it as a fully styled, interactive chart.
 
