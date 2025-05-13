@@ -14,8 +14,8 @@ It features a chatbot-like UI that accepts natural language input, generates cha
 - 🔸 Chart export as image
 
 ## 📸 Preview
+![Presentation1](https://github.com/user-attachments/assets/74ef94fe-95a6-43fe-a112-ff1cd8723a83)
 
-> Coming soon: Add a screenshot or screen recording of your app here.
 
 ## 🧰 Technologies Used
 
